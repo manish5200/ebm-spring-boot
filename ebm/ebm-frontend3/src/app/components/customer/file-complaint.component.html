@@ -1,0 +1,214 @@
+<div class="file-complaint-bg">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card shadow-lg border-0 glass-card">
+          <div class="card-header bg-white border-bottom">
+            <h3 class="mb-0 text-ebm-primary">
+              <i class="fas fa-plus-circle me-2"></i>File New Complaint
+            </h3>
+            <p class="text-muted mb-0">Report an issue or request assistance</p>
+          </div>
+          <div class="card-body p-4">
+            <form [formGroup]="complaintForm" (ngSubmit)="onSubmit()">
+              <!-- Complaint Type -->
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Complaint Type <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                    <select class="form-select" formControlName="type" [ngClass]="{'is-invalid': complaintForm.get('type')?.invalid && complaintForm.get('type')?.touched}">
+                      <option value="">Select complaint type</option>
+                      <option value="BILLING_ISSUE">Billing Issue</option>
+                      <option value="TECHNICAL_PROBLEM">Technical Problem</option>
+                      <option value="SERVICE_REQUEST">Service Request</option>
+                      <option value="PAYMENT_ISSUE">Payment Issue</option>
+                      <option value="METER_READING">Meter Reading Issue</option>
+                      <option value="POWER_OUTAGE">Power Outage</option>
+                      <option value="OTHER">Other</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="complaintForm.get('type')?.invalid && complaintForm.get('type')?.touched">
+                      Please select a complaint type.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Category <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-folder"></i></span>
+                    <select class="form-select" formControlName="category" [ngClass]="{'is-invalid': complaintForm.get('category')?.invalid && complaintForm.get('category')?.touched}">
+                      <option value="">Select category</option>
+                      <option value="BILLING">Billing</option>
+                      <option value="TECHNICAL">Technical</option>
+                      <option value="SERVICE">Service</option>
+                      <option value="OTHER">Other</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="complaintForm.get('category')?.invalid && complaintForm.get('category')?.touched">
+                      Please select a category.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Problem Description -->
+              <div class="mb-3">
+                <label class="form-label">Problem Description <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-comment"></i></span>
+                  <textarea class="form-control" rows="4" formControlName="problem" placeholder="Please describe your problem in detail..." [ngClass]="{'is-invalid': complaintForm.get('problem')?.invalid && complaintForm.get('problem')?.touched}"></textarea>
+                  <div class="invalid-feedback" *ngIf="complaintForm.get('problem')?.invalid && complaintForm.get('problem')?.touched">
+                    Problem description is required (minimum 10 characters).
+                  </div>
+                </div>
+                <small class="text-muted">
+                  <i class="fas fa-info-circle me-1"></i>
+                  Be as detailed as possible to help us resolve your issue quickly.
+                </small>
+              </div>
+
+              <!-- Location and Priority -->
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Landmark/Location <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                    <input type="text" class="form-control" formControlName="landmark" placeholder="Enter landmark or location details" [ngClass]="{'is-invalid': complaintForm.get('landmark')?.invalid && complaintForm.get('landmark')?.touched}">
+                    <div class="invalid-feedback" *ngIf="complaintForm.get('landmark')?.invalid && complaintForm.get('landmark')?.touched">
+                      Landmark is required.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Priority Level <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-exclamation-triangle"></i></span>
+                    <select class="form-select" formControlName="priority" [ngClass]="{'is-invalid': complaintForm.get('priority')?.invalid && complaintForm.get('priority')?.touched}">
+                      <option value="">Select priority</option>
+                      <option value="LOW">Low - General inquiry</option>
+                      <option value="MEDIUM">Medium - Minor issue</option>
+                      <option value="HIGH">High - Significant problem</option>
+                      <option value="URGENT">Urgent - Critical issue</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="complaintForm.get('priority')?.invalid && complaintForm.get('priority')?.touched">
+                      Please select a priority level.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Additional Information -->
+              <div class="mb-3">
+                <label class="form-label">Additional Information</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-info-circle"></i></span>
+                  <textarea class="form-control" rows="3" formControlName="additionalInfo" placeholder="Any additional information that might help us understand your issue better..."></textarea>
+                </div>
+                <small class="text-muted">
+                  <i class="fas fa-lightbulb me-1"></i>
+                  Include any relevant details like previous complaint numbers, meter readings, etc.
+                </small>
+              </div>
+
+              <!-- Contact Preferences -->
+              <div class="mb-3">
+                <label class="form-label">Preferred Contact Method</label>
+                <div class="d-flex gap-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="contactMethod" id="email" value="email" [(ngModel)]="contactMethod" checked>
+                    <label class="form-check-label" for="email">
+                      <i class="fas fa-envelope me-1"></i>Email
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="contactMethod" id="phone" value="phone" [(ngModel)]="contactMethod">
+                    <label class="form-check-label" for="phone">
+                      <i class="fas fa-phone me-1"></i>Phone
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="contactMethod" id="sms" value="sms" [(ngModel)]="contactMethod">
+                    <label class="form-check-label" for="sms">
+                      <i class="fas fa-sms me-1"></i>SMS
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Terms and Conditions -->
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="agreeTerms" formControlName="agreeTerms" [ngClass]="{'is-invalid': complaintForm.get('agreeTerms')?.invalid && complaintForm.get('agreeTerms')?.touched}">
+                <label class="form-check-label" for="agreeTerms">
+                  I agree to the <a href="#" class="text-ebm-primary">Terms and Conditions</a> and confirm that the information provided is accurate.
+                </label>
+                <div class="invalid-feedback" *ngIf="complaintForm.get('agreeTerms')?.invalid && complaintForm.get('agreeTerms')?.touched">
+                  You must agree to the terms and conditions.
+                </div>
+              </div>
+
+              <!-- Error Messages -->
+              <div *ngIf="errorMessage" class="alert alert-danger py-2">
+                <i class="fas fa-exclamation-circle me-2"></i>{{ errorMessage }}
+              </div>
+
+              <!-- Success Messages -->
+              <div *ngIf="successMessage" class="alert alert-success py-2">
+                <i class="fas fa-check-circle me-2"></i>{{ successMessage }}
+              </div>
+
+              <!-- Submit Buttons -->
+              <div class="d-flex gap-3">
+                <button type="submit" class="btn btn-primary btn-lg" [disabled]="isLoading || complaintForm.invalid">
+                  <i class="fas fa-paper-plane me-2"></i>
+                  {{ isLoading ? 'Submitting...' : 'Submit Complaint' }}
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-lg" (click)="resetForm()">
+                  <i class="fas fa-undo me-2"></i>Reset Form
+                </button>
+                <a routerLink="/customer/complaints" class="btn btn-outline-info btn-lg">
+                  <i class="fas fa-arrow-left me-2"></i>Back to Complaints
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="card border-0 shadow-sm mt-4">
+          <div class="card-header bg-light border-bottom">
+            <h5 class="mb-0 text-ebm-primary">
+              <i class="fas fa-question-circle me-2"></i>Need Help?
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="d-flex align-items-start">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-phone text-primary fs-4"></i>
+                  </div>
+                  <div class="flex-grow-1 ms-3">
+                    <h6>Call Us</h6>
+                    <p class="text-muted mb-0">24/7 Customer Support</p>
+                    <strong>1800-123-4567</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex align-items-start">
+                  <div class="flex-shrink-0">
+                    <i class="fas fa-envelope text-primary fs-4"></i>
+                  </div>
+                  <div class="flex-grow-1 ms-3">
+                    <h6>Email Support</h6>
+                    <p class="text-muted mb-0">Get response within 24 hours</p>
+                    <strong>support&#64;ebmsystem.com</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

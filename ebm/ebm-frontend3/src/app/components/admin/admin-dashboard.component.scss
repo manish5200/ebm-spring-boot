@@ -1,0 +1,58 @@
+// Admin Dashboard Styles
+.card-hover {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+.feature-icon {
+  transition: transform 0.2s ease-in-out;
+  
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.btn {
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.admin-dashboard-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%), url('/assets/admin-bg.svg') center/cover no-repeat;
+  background-blend-mode: lighten;
+}
+
+.glass-card {
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+  border-radius: 1rem;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.18);
+}
+
+.feature-icon {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .display-6 {
+    font-size: 1.5rem;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+
+  .glass-card {
+    border-radius: 0.5rem;
+  }
+}

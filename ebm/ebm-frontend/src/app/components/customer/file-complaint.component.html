@@ -1,0 +1,25 @@
+<div class="container mt-4">
+  <h2 class="mb-4">File a Complaint</h2>
+  <form (ngSubmit)="submit()" #complaintForm="ngForm">
+    <div class="mb-3">
+      <label class="form-label">Type</label>
+      <input class="form-control" [(ngModel)]="complaint.type" name="type" required />
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Category</label>
+      <input class="form-control" [(ngModel)]="complaint.category" name="category" required />
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Problem Description</label>
+      <textarea class="form-control" [(ngModel)]="complaint.problem" name="problem" rows="3" required></textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Landmark (optional)</label>
+      <input class="form-control" [(ngModel)]="complaint.landmark" name="landmark" />
+    </div>
+    <button class="btn btn-primary" [disabled]="loading || !complaintForm.form.valid">Submit</button>
+    <a class="btn btn-secondary ms-2" routerLink="/customer/complaints">Cancel</a>
+  </form>
+  <div *ngIf="error" class="alert alert-danger mt-3">{{ error }}</div>
+  <div *ngIf="success" class="alert alert-success mt-3">{{ success }}</div>
+</div>

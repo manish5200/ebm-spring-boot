@@ -1,0 +1,23 @@
+form {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+h2 {
+  text-align: center;
+  color: var(--bs-primary);
+}
+
+.btn {
+  min-width: 100px;
+}
+
+@media (max-width: 768px) {
+  form {
+    padding: 1rem;
+  }
+}

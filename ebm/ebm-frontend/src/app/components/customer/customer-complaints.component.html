@@ -1,0 +1,54 @@
+<div class="container mt-4">
+  <h2 class="mb-4">My Complaints</h2>
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3 text-muted">Loading complaints...</p>
+  </div>
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+  <div *ngIf="success" class="alert alert-success">{{ success }}</div>
+  <table class="table table-hover table-bordered" *ngIf="!loading && complaints.length">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+        <th>Type</th>
+        <th>Category</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Admin Response</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let complaint of complaints; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ complaint.type }}</td>
+        <td>{{ complaint.category }}</td>
+        <td *ngIf="editComplaintId !== complaint.complaintId">{{ complaint.problem }}</td>
+        <td *ngIf="editComplaintId === complaint.complaintId">
+          <input class="form-control" [(ngModel)]="editForm.problem" />
+        </td>
+        <td>{{ complaint.status }}</td>
+        <td>{{ complaint.adminResponse || '-' }}</td>
+        <td>{{ complaint.createdAt | date:'medium' }}</td>
+        <td>
+          <button *ngIf="editComplaintId !== complaint.complaintId && complaint.status === 'OPEN'" class="btn btn-sm btn-primary me-2" (click)="startEdit(complaint)">
+            <i class="fas fa-edit"></i> Edit
+          </button>
+          <button *ngIf="editComplaintId === complaint.complaintId" class="btn btn-sm btn-success me-2" (click)="saveEdit()">
+            <i class="fas fa-save"></i> Save
+          </button>
+          <button *ngIf="editComplaintId === complaint.complaintId" class="btn btn-sm btn-secondary me-2" (click)="cancelEdit()">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+          <button *ngIf="complaint.status === 'OPEN'" class="btn btn-sm btn-danger" (click)="deleteComplaint(complaint.complaintId)">
+            <i class="fas fa-trash"></i> Delete
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngIf="!loading && !complaints.length" class="alert alert-info">No complaints found.</div>
+</div>

@@ -1,0 +1,40 @@
+.customer-bills-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0fdfa 0%, #e0e7ff 100%), url('/assets/customer-bg.svg') center/cover no-repeat;
+  background-blend-mode: lighten;
+}
+
+.glass-card {
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+  border-radius: 1rem;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.18);
+}
+
+.table {
+  background: #fff;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+th, td {
+  vertical-align: middle !important;
+}
+
+.btn {
+  min-width: 80px;
+}
+
+@media (max-width: 768px) {
+  .glass-card {
+    border-radius: 0.5rem;
+  }
+  .table {
+    font-size: 0.95rem;
+  }
+  th, td {
+    padding: 0.5rem;
+  }
+}

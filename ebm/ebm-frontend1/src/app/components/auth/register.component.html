@@ -1,0 +1,351 @@
+<div class="register-container min-vh-100 d-flex align-items-center bg-gradient-primary py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-md-10">
+        <div class="card shadow-lg border-0 rounded-lg">
+          <div class="card-header bg-white text-center py-4">
+            <h3 class="text-ebm-primary mb-0">
+              <i class="fas fa-user-plus me-2"></i>
+              Create New Account
+            </h3>
+            <p class="text-muted mb-0">Join the EBM System</p>
+          </div>
+          <div class="card-body p-4">
+            <!-- Role Selection -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h6 class="text-ebm-primary mb-3">
+                  <i class="fas fa-users me-2"></i>Account Type
+                </h6>
+                <div class="btn-group w-100" role="group">
+                  <input 
+                    type="radio" 
+                    class="btn-check" 
+                    name="role" 
+                    id="customer" 
+                    [value]="'CUSTOMER'"
+                    [(ngModel)]="selectedRole"
+                    (change)="onRoleChange('CUSTOMER')">
+                  <label class="btn btn-outline-primary" for="customer">
+                    <i class="fas fa-user me-2"></i>Customer
+                  </label>
+                  
+                  <input 
+                    type="radio" 
+                    class="btn-check" 
+                    name="role" 
+                    id="admin" 
+                    [value]="'ADMIN'"
+                    [(ngModel)]="selectedRole"
+                    (change)="onRoleChange('ADMIN')">
+                  <label class="btn btn-outline-success" for="admin">
+                    <i class="fas fa-user-shield me-2"></i>Administrator
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Success Alert -->
+            <div *ngIf="success" class="alert alert-success border-0 mb-3">
+              <i class="fas fa-check-circle me-2"></i>{{ success }}
+            </div>
+
+            <!-- Error Alert -->
+            <div *ngIf="error" class="alert alert-danger border-0 mb-3">
+              <i class="fas fa-exclamation-triangle me-2"></i>{{ error }}
+            </div>
+
+            <!-- Registration Form -->
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+              <!-- Basic Information -->
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-floating mb-3">
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="firstName"
+                      formControlName="firstName"
+                      placeholder="First Name"
+                      [class.is-invalid]="f['firstName'].invalid && f['firstName'].touched">
+                    <label for="firstName">
+                      <i class="fas fa-user me-2"></i>First Name
+                    </label>
+                    <div *ngIf="f['firstName'].invalid && f['firstName'].touched" class="invalid-feedback">
+                      <div *ngIf="f['firstName'].errors?.['required']">First name is required</div>
+                      <div *ngIf="f['firstName'].errors?.['minlength']">First name must be at least 2 characters</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating mb-3">
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="lastName"
+                      formControlName="lastName"
+                      placeholder="Last Name"
+                      [class.is-invalid]="f['lastName'].invalid && f['lastName'].touched">
+                    <label for="lastName">
+                      <i class="fas fa-user me-2"></i>Last Name
+                    </label>
+                    <div *ngIf="f['lastName'].invalid && f['lastName'].touched" class="invalid-feedback">
+                      <div *ngIf="f['lastName'].errors?.['required']">Last name is required</div>
+                      <div *ngIf="f['lastName'].errors?.['minlength']">Last name must be at least 2 characters</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-floating mb-3">
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="username"
+                      formControlName="username"
+                      placeholder="Username"
+                      [class.is-invalid]="f['username'].invalid && f['username'].touched">
+                    <label for="username">
+                      <i class="fas fa-at me-2"></i>Username
+                    </label>
+                    <div *ngIf="f['username'].invalid && f['username'].touched" class="invalid-feedback">
+                      <div *ngIf="f['username'].errors?.['required']">Username is required</div>
+                      <div *ngIf="f['username'].errors?.['minlength']">Username must be at least 3 characters</div>
+                      <div *ngIf="f['username'].errors?.['maxlength']">Username must be less than 20 characters</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating mb-3">
+                    <input 
+                      type="email" 
+                      class="form-control" 
+                      id="email"
+                      formControlName="email"
+                      placeholder="Email"
+                      [class.is-invalid]="f['email'].invalid && f['email'].touched">
+                    <label for="email">
+                      <i class="fas fa-envelope me-2"></i>Email
+                    </label>
+                    <div *ngIf="f['email'].invalid && f['email'].touched" class="invalid-feedback">
+                      <div *ngIf="f['email'].errors?.['required']">Email is required</div>
+                      <div *ngIf="f['email'].errors?.['email']">Please enter a valid email</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-floating mb-3">
+                    <input 
+                      type="password" 
+                      class="form-control" 
+                      id="password"
+                      formControlName="password"
+                      placeholder="Password"
+                      [class.is-invalid]="f['password'].invalid && f['password'].touched">
+                    <label for="password">
+                      <i class="fas fa-lock me-2"></i>Password
+                    </label>
+                    <div *ngIf="f['password'].invalid && f['password'].touched" class="invalid-feedback">
+                      <div *ngIf="f['password'].errors?.['required']">Password is required</div>
+                      <div *ngIf="f['password'].errors?.['minlength']">Password must be at least 6 characters</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating mb-3">
+                    <input 
+                      type="password" 
+                      class="form-control" 
+                      id="confirmPassword"
+                      formControlName="confirmPassword"
+                      placeholder="Confirm Password"
+                      [class.is-invalid]="f['confirmPassword'].invalid && f['confirmPassword'].touched">
+                    <label for="confirmPassword">
+                      <i class="fas fa-lock me-2"></i>Confirm Password
+                    </label>
+                    <div *ngIf="f['confirmPassword'].invalid && f['confirmPassword'].touched" class="invalid-feedback">
+                      <div *ngIf="f['confirmPassword'].errors?.['required']">Please confirm your password</div>
+                      <div *ngIf="f['confirmPassword'].errors?.['passwordMismatch']">Passwords do not match</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-floating mb-3">
+                <input 
+                  type="tel" 
+                  class="form-control" 
+                  id="phone"
+                  formControlName="phone"
+                  placeholder="Phone Number"
+                  [class.is-invalid]="f['phone'].invalid && f['phone'].touched">
+                <label for="phone">
+                  <i class="fas fa-phone me-2"></i>Phone Number
+                </label>
+                <div *ngIf="f['phone'].invalid && f['phone'].touched" class="invalid-feedback">
+                  <div *ngIf="f['phone'].errors?.['required']">Phone number is required</div>
+                  <div *ngIf="f['phone'].errors?.['pattern']">Please enter a valid 10-digit phone number</div>
+                </div>
+              </div>
+
+              <!-- Customer Specific Fields -->
+              <div *ngIf="selectedRole === 'CUSTOMER'">
+                <h6 class="text-ebm-primary mb-3 mt-4">
+                  <i class="fas fa-home me-2"></i>Customer Information
+                </h6>
+                
+                <div class="form-floating mb-3">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="consumerId"
+                    formControlName="consumerId"
+                    placeholder="Consumer ID"
+                    [class.is-invalid]="f['consumerId'].invalid && f['consumerId'].touched">
+                  <label for="consumerId">
+                    <i class="fas fa-id-card me-2"></i>Consumer ID
+                  </label>
+                  <div *ngIf="f['consumerId'].invalid && f['consumerId'].touched" class="invalid-feedback">
+                    <div *ngIf="f['consumerId'].errors?.['required']">Consumer ID is required</div>
+                  </div>
+                </div>
+
+                <div class="form-floating mb-3">
+                  <textarea 
+                    class="form-control" 
+                    id="address"
+                    formControlName="address"
+                    placeholder="Address"
+                    style="height: 100px"
+                    [class.is-invalid]="f['address'].invalid && f['address'].touched"></textarea>
+                  <label for="address">
+                    <i class="fas fa-map-marker-alt me-2"></i>Address
+                  </label>
+                  <div *ngIf="f['address'].invalid && f['address'].touched" class="invalid-feedback">
+                    <div *ngIf="f['address'].errors?.['required']">Address is required</div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-floating mb-3">
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        id="city"
+                        formControlName="city"
+                        placeholder="City"
+                        [class.is-invalid]="f['city'].invalid && f['city'].touched">
+                      <label for="city">
+                        <i class="fas fa-city me-2"></i>City
+                      </label>
+                      <div *ngIf="f['city'].invalid && f['city'].touched" class="invalid-feedback">
+                        <div *ngIf="f['city'].errors?.['required']">City is required</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-floating mb-3">
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        id="state"
+                        formControlName="state"
+                        placeholder="State"
+                        [class.is-invalid]="f['state'].invalid && f['state'].touched">
+                      <label for="state">
+                        <i class="fas fa-flag me-2"></i>State
+                      </label>
+                      <div *ngIf="f['state'].invalid && f['state'].touched" class="invalid-feedback">
+                        <div *ngIf="f['state'].errors?.['required']">State is required</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-floating mb-3">
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        id="pincode"
+                        formControlName="pincode"
+                        placeholder="Pincode"
+                        [class.is-invalid]="f['pincode'].invalid && f['pincode'].touched">
+                      <label for="pincode">
+                        <i class="fas fa-mail-bulk me-2"></i>Pincode
+                      </label>
+                      <div *ngIf="f['pincode'].invalid && f['pincode'].touched" class="invalid-feedback">
+                        <div *ngIf="f['pincode'].errors?.['required']">Pincode is required</div>
+                        <div *ngIf="f['pincode'].errors?.['pattern']">Please enter a valid 6-digit pincode</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Admin Specific Fields -->
+              <div *ngIf="selectedRole === 'ADMIN'">
+                <h6 class="text-ebm-primary mb-3 mt-4">
+                  <i class="fas fa-building me-2"></i>Administrator Information
+                </h6>
+                
+                <div class="form-floating mb-3">
+                  <select 
+                    class="form-select" 
+                    id="department"
+                    formControlName="department"
+                    [class.is-invalid]="f['department'].invalid && f['department'].touched">
+                    <option value="">Select Department</option>
+                    <option value="BILLING">Billing Department</option>
+                    <option value="TECHNICAL">Technical Department</option>
+                    <option value="CUSTOMER_SERVICE">Customer Service</option>
+                    <option value="OPERATIONS">Operations</option>
+                    <option value="MANAGEMENT">Management</option>
+                  </select>
+                  <label for="department">
+                    <i class="fas fa-briefcase me-2"></i>Department
+                  </label>
+                  <div *ngIf="f['department'].invalid && f['department'].touched" class="invalid-feedback">
+                    <div *ngIf="f['department'].errors?.['required']">Department is required</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="d-grid mb-3 mt-4">
+                <button 
+                  type="submit" 
+                  class="btn btn-ebm-primary btn-lg"
+                  [disabled]="loading">
+                  <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                  <i *ngIf="!loading" class="fas fa-user-plus me-2"></i>
+                  {{ loading ? 'Creating Account...' : 'Create Account' }}
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="card-footer bg-light text-center py-3">
+            <p class="mb-0 text-muted">
+              Already have an account? 
+              <a routerLink="/login" class="text-ebm-primary text-decoration-none fw-bold">
+                Sign in here
+              </a>
+            </p>
+          </div>
+        </div>
+
+        <!-- Back to Home -->
+        <div class="text-center mt-4">
+          <a routerLink="/" class="text-white text-decoration-none">
+            <i class="fas fa-arrow-left me-2"></i>
+            Back to Home
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

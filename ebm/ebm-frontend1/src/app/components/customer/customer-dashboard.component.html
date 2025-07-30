@@ -1,0 +1,239 @@
+<!-- Navigation Header -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-ebm-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">
+      <i class="fas fa-bolt me-2"></i>EBM System
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link active" routerLink="/customer/dashboard">
+            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/customer/bills">
+            <i class="fas fa-file-invoice-dollar me-1"></i>Bills
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/customer/complaints">
+            <i class="fas fa-exclamation-triangle me-1"></i>Complaints
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/customer/payments">
+            <i class="fas fa-credit-card me-1"></i>Payments
+          </a>
+        </li>
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="fas fa-user-circle me-1"></i>{{ currentUser?.username }}
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#" (click)="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container-fluid py-4">
+  <!-- Welcome Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h2 class="text-ebm-primary mb-1">Welcome back, {{ currentUser?.username }}!</h2>
+          <p class="text-muted mb-0">Here's your electricity account overview</p>
+        </div>
+        <div class="text-end">
+          <small class="text-muted">Last updated: {{ getCurrentDateTime() | date:'medium' }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3 text-muted">Loading your dashboard...</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading">
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-5">
+      <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm card-hover h-100">
+          <div class="card-body text-center">
+            <div class="feature-icon bg-warning text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+              <i class="fas fa-file-invoice-dollar fs-4"></i>
+            </div>
+            <h3 class="text-warning mb-1">{{ stats.pendingBills }}</h3>
+            <p class="text-muted mb-2">Pending Bills</p>
+            <small class="text-muted">Due Amount: {{ formatCurrency(stats.totalDue) }}</small>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm card-hover h-100">
+          <div class="card-body text-center">
+            <div class="feature-icon bg-success text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+              <i class="fas fa-check-circle fs-4"></i>
+            </div>
+            <h3 class="text-success mb-1">{{ stats.paidBills }}</h3>
+            <p class="text-muted mb-2">Paid Bills</p>
+            <small class="text-success">All settled</small>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm card-hover h-100">
+          <div class="card-body text-center">
+            <div class="feature-icon bg-info text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+              <i class="fas fa-exclamation-triangle fs-4"></i>
+            </div>
+            <h3 class="text-info mb-1">{{ stats.openComplaints }}</h3>
+            <p class="text-muted mb-2">Open Complaints</p>
+            <small class="text-info">Pending resolution</small>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm card-hover h-100">
+          <div class="card-body text-center">
+            <div class="feature-icon bg-primary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+              <i class="fas fa-rupee-sign fs-4"></i>
+            </div>
+            <h3 class="text-primary mb-1">{{ formatCurrency(stats.totalDue) }}</h3>
+            <p class="text-muted mb-2">Total Due</p>
+            <a href="#" class="btn btn-sm btn-primary">Pay Now</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-5">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white border-bottom">
+            <h5 class="mb-0 text-ebm-primary">
+              <i class="fas fa-bolt me-2"></i>Quick Actions
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-lg-3 col-md-6">
+                <a routerLink="/customer/bills" class="btn btn-outline-primary w-100 py-3">
+                  <i class="fas fa-file-invoice-dollar d-block fs-2 mb-2"></i>
+                  View Bills
+                </a>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <a href="#" class="btn btn-outline-success w-100 py-3">
+                  <i class="fas fa-credit-card d-block fs-2 mb-2"></i>
+                  Pay Bill
+                </a>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <a routerLink="/customer/file-complaint" class="btn btn-outline-warning w-100 py-3">
+                  <i class="fas fa-plus-circle d-block fs-2 mb-2"></i>
+                  File Complaint
+                </a>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <a routerLink="/customer/complaints" class="btn btn-outline-info w-100 py-3">
+                  <i class="fas fa-list d-block fs-2 mb-2"></i>
+                  View Complaints
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row g-4">
+      <!-- Recent Bills -->
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-ebm-primary">
+              <i class="fas fa-file-invoice me-2"></i>Recent Bills
+            </h5>
+            <a routerLink="/customer/bills" class="btn btn-sm btn-outline-primary">View All</a>
+          </div>
+          <div class="card-body">
+            <div *ngIf="recentBills.length === 0" class="text-center py-4">
+              <i class="fas fa-inbox fs-1 text-muted mb-3"></i>
+              <p class="text-muted">No bills found</p>
+            </div>
+            <div *ngFor="let bill of recentBills" class="d-flex justify-content-between align-items-center py-3 border-bottom">
+              <div>
+                <h6 class="mb-1">{{ bill.billingMonth }}</h6>
+                <small class="text-muted">Bill ID: {{ bill.billId }}</small>
+                <br>
+                <small class="text-muted">Due: {{ formatDate(bill.dueDate) }}</small>
+              </div>
+              <div class="text-end">
+                <h6 class="mb-1">{{ formatCurrency(bill.amountDue) }}</h6>
+                <span class="badge" [class]="getStatusBadgeClass(bill.status)">
+                  {{ bill.status }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Complaints -->
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-ebm-primary">
+              <i class="fas fa-exclamation-triangle me-2"></i>Recent Complaints
+            </h5>
+            <a routerLink="/customer/complaints" class="btn btn-sm btn-outline-primary">View All</a>
+          </div>
+          <div class="card-body">
+            <div *ngIf="recentComplaints.length === 0" class="text-center py-4">
+              <i class="fas fa-inbox fs-1 text-muted mb-3"></i>
+              <p class="text-muted">No complaints found</p>
+            </div>
+            <div *ngFor="let complaint of recentComplaints" class="d-flex justify-content-between align-items-center py-3 border-bottom">
+              <div>
+                <h6 class="mb-1">{{ complaint.type }}</h6>
+                <small class="text-muted">{{ complaint.category }}</small>
+                <br>
+                <small class="text-muted">{{ formatDate(complaint.createdAt) }}</small>
+              </div>
+              <div class="text-end">
+                <span class="badge" [class]="getStatusBadgeClass(complaint.status)">
+                  {{ complaint.status }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,68 @@
+<div class="container mt-4">
+  <h2 class="mb-4">All Complaints</h2>
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3 text-muted">Loading complaints...</p>
+  </div>
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+  <div *ngIf="success" class="alert alert-success">{{ success }}</div>
+  <table class="table table-hover table-bordered" *ngIf="!loading && complaints.length">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Status</th>
+        <th>Customer</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let complaint of complaints; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{complaint.type }}</td>
+        <td>{{ complaint.category }}</td>
+        <td>
+          <select class="form-select form-select-sm" [(ngModel)]="complaint.status" (change)="updateStatus(complaint, complaint.status)">
+            <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+          </select>
+        </td>
+        <td>{{ complaint.customerName }}</td>
+        <!-- FIXED: Changed complaint.createdAt to complaint.createdDate -->
+                    
+        <td>
+          <button class="btn btn-info btn-sm" (click)="selectComplaint(complaint)">
+            <i class="fas fa-reply"></i> Respond
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngIf="!loading && !complaints.length" class="alert alert-info">No complaints found.</div>
+
+  <!-- Complaint Response Modal -->
+  <div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0,0,0,0.3);" *ngIf="selectedComplaint">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Respond to Complaint</h5>
+          <button type="button" class="btn-close" (click)="selectedComplaint = null"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Type:</strong> {{selectedComplaint.type }}</p>
+          <!-- FIXED: Changed selectedComplaint.problem to selectedComplaint.description -->
+          <p><strong>Description:</strong> {{ selectedComplaint.description }}</p>
+          <p><strong>Customer:</strong> {{ selectedComplaint.customerName }}</p>
+          <textarea class="form-control" [(ngModel)]="responseMessage" rows="4" placeholder="Type your response..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="sendResponse(selectedComplaint)">Send Response</button>
+          <button type="button" class="btn btn-secondary" (click)="selectedComplaint = null">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

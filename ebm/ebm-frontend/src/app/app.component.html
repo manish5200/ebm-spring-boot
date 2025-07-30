@@ -1,0 +1,193 @@
+<nav class="navbar navbar-expand-lg navbar-modern fixed-top">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/home">
+      <i class="fas fa-bolt me-2"></i>
+      EBM System
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+            <i class="fas fa-home me-1"></i>Home
+          </a>
+        </li>
+
+        <!-- Customer Navigation -->
+        <ng-container *ngIf="isCustomer()">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/customer/dashboard" routerLinkActive="active">
+              <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/customer/bills" routerLinkActive="active">
+              <i class="fas fa-file-invoice-dollar me-1"></i>Bills
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/customer/complaints" routerLinkActive="active">
+              <i class="fas fa-exclamation-triangle me-1"></i>Complaints
+            </a>
+          </li>
+        </ng-container>
+
+        <!-- Admin Navigation -->
+        <ng-container *ngIf="isAdmin()">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/dashboard" routerLinkActive="active">
+              <i class="fas fa-chart-line me-1"></i>Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/users" routerLinkActive="active">
+              <i class="fas fa-users me-1"></i>Users
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/complaints" routerLinkActive="active">
+              <i class="fas fa-clipboard-list me-1"></i>Complaints
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/bills" routerLinkActive="active">
+              <i class="fas fa-receipt me-1"></i>Bills
+            </a>
+          </li>
+        </ng-container>
+      </ul>
+
+      <ul class="navbar-nav">
+        <!-- Authenticated User Menu -->
+        <ng-container *ngIf="isAuthenticated(); else guestMenu">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user-circle me-1"></i>
+              {{ getCurrentUser()?.firstName || 'User' }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" routerLink="/customer/profile" *ngIf="isCustomer()">
+                  <i class="fas fa-user-edit me-2"></i>Profile
+                </a>
+                <a class="dropdown-item" routerLink="/admin/profile" *ngIf="isAdmin()">
+                  <i class="fas fa-user-edit me-2"></i>Profile
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item" href="#" (click)="logout()">
+                  <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ng-container>
+
+        <!-- Guest Menu -->
+        <ng-template #guestMenu>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/auth/login" routerLinkActive="active">
+              <i class="fas fa-sign-in-alt me-1"></i>Login
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/auth/register" routerLinkActive="active">
+              <i class="fas fa-user-plus me-1"></i>Sign Up
+            </a>
+          </li>
+        </ng-template>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>
+
+<!-- Footer -->
+<footer class="footer-modern">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 col-md-6 mb-4">
+        <h5 class="footer-title">
+          <i class="fas fa-bolt me-2"></i>
+          EBM System
+        </h5>
+        <p class="text-muted">
+          Your trusted partner for electricity bill management.
+          Efficient, reliable, and customer-focused service.
+        </p>
+        <div class="social-links">
+          <a href="#" class="footer-link me-3">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="#" class="footer-link me-3">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="#" class="footer-link me-3">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="#" class="footer-link">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-md-6 mb-4">
+        <h5 class="footer-title">Quick Links</h5>
+        <a href="#" class="footer-link">About Us</a>
+        <a href="#" class="footer-link">Services</a>
+        <a href="#" class="footer-link">Contact</a>
+        <a href="#" class="footer-link">Privacy Policy</a>
+      </div>
+
+      <div class="col-lg-3 col-md-6 mb-4">
+        <h5 class="footer-title">Customer Service</h5>
+        <a href="#" class="footer-link">Help Center</a>
+        <a href="#" class="footer-link">Report Issue</a>
+        <a href="#" class="footer-link">Bill Payment</a>
+        <a href="#" class="footer-link">FAQs</a>
+      </div>
+
+      <div class="col-lg-3 col-md-6 mb-4">
+        <h5 class="footer-title">Contact Info</h5>
+        <p class="footer-link">
+          <i class="fas fa-phone me-2"></i>
+          +1 (555) 123-4567
+        </p>
+        <p class="footer-link">
+          <i class="fas fa-envelope me-2"></i>
+          support&#64;ebmsystem.com <!-- FIXED: Replaced @ with &#64; -->
+        </p>
+        <p class="footer-link">
+          <i class="fas fa-map-marker-alt me-2"></i>
+          123 Electric Ave, Power City
+        </p>
+      </div>
+    </div>
+
+    <hr class="my-4" style="border-color: rgba(255,255,255,0.1);">
+
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <p class="mb-0 text-muted">
+          &copy; 2024 EBM System. All rights reserved.
+        </p>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <p class="mb-0 text-muted">
+          Powered by Angular & Bootstrap
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,167 @@
+<!-- Admin Dashboard -->
+<div class="container-fluid">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h2 class="text-ebm-primary mb-1">Admin Dashboard</h2>
+          <p class="text-muted mb-0">Welcome back, {{ currentUser?.username }}!</p>
+        </div>
+        <div class="text-end">
+          <small class="text-muted">Last updated: {{ getCurrentDateTime() | date:'medium' }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3 text-muted">Loading admin dashboard...</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading">
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-5">
+      <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm card-hover h-100">
+          <div class="card-body text-center">
+            <div class="feature-icon bg-primary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+              <i class="fas fa-users fs-4"></i>
+            </div>
+            <h4 class="card-title text-ebm-primary">Total Customers</h4>
+            <p class="display-6 fw-bold text-primary">0</p>
+            <small class="text-muted">Registered customers</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm card-hover h-100">
+          <div class="card-body text-center">
+            <div class="feature-icon bg-success text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+              <i class="fas fa-file-invoice-dollar fs-4"></i>
+            </div>
+            <h4 class="card-title text-ebm-primary">Total Bills</h4>
+            <p class="display-6 fw-bold text-success">0</p>
+            <small class="text-muted">Generated bills</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm card-hover h-100">
+          <div class="card-body text-center">
+            <div class="feature-icon bg-warning text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+              <i class="fas fa-exclamation-triangle fs-4"></i>
+            </div>
+            <h4 class="card-title text-ebm-primary">Pending Complaints</h4>
+            <p class="display-6 fw-bold text-warning">0</p>
+            <small class="text-muted">Awaiting response</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="card border-0 shadow-sm card-hover h-100">
+          <div class="card-body text-center">
+            <div class="feature-icon bg-info text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+              <i class="fas fa-chart-line fs-4"></i>
+            </div>
+            <h4 class="card-title text-ebm-primary">Revenue</h4>
+            <p class="display-6 fw-bold text-info">₹0</p>
+            <small class="text-muted">Total collection</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row g-4 mb-5">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white">
+            <h5 class="card-title mb-0 text-ebm-primary">
+              <i class="fas fa-bolt me-2"></i>Quick Actions
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-3">
+                <button class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                  <i class="fas fa-user-plus fs-2 mb-2"></i>
+                  <span>Add Customer</span>
+                </button>
+              </div>
+              <div class="col-md-3">
+                <button class="btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                  <i class="fas fa-file-invoice fs-2 mb-2"></i>
+                  <span>Generate Bill</span>
+                </button>
+              </div>
+              <div class="col-md-3">
+                <button class="btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                  <i class="fas fa-comments fs-2 mb-2"></i>
+                  <span>View Complaints</span>
+                </button>
+              </div>
+              <div class="col-md-3">
+                <button class="btn btn-outline-info w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                  <i class="fas fa-chart-bar fs-2 mb-2"></i>
+                  <span>Reports</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white">
+            <h5 class="card-title mb-0 text-ebm-primary">
+              <i class="fas fa-clock me-2"></i>Recent Activity
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="text-center text-muted py-4">
+              <i class="fas fa-inbox fs-1 mb-3"></i>
+              <p>No recent activity to display</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white">
+            <h5 class="card-title mb-0 text-ebm-primary">
+              <i class="fas fa-user me-2"></i>Admin Profile
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="text-center mb-3">
+              <div class="bg-primary text-white rounded-circle mx-auto d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                <i class="fas fa-user-shield fs-2"></i>
+              </div>
+            </div>
+            <div class="text-center">
+              <h6 class="mb-1">{{ currentUser?.username }}</h6>
+              <p class="text-muted mb-3">Administrator</p>
+              <button class="btn btn-outline-primary btn-sm" (click)="logout()">
+                <i class="fas fa-sign-out-alt me-1"></i>Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

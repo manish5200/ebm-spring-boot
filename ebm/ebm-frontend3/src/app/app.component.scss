@@ -1,0 +1,131 @@
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  padding-top: 80px; // Account for fixed navbar height
+  min-height: calc(100vh - 80px);
+}
+
+footer {
+  margin-top: auto;
+}
+
+// Navbar styles
+.navbar-modern {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  
+  .navbar-toggler {
+    border: none;
+    padding: 0.25rem 0.5rem;
+    
+    &:focus {
+      box-shadow: none;
+    }
+    
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2833, 37, 41, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+  }
+  
+  .dropdown-menu {
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    padding: 0.5rem 0;
+    
+    .dropdown-item {
+      padding: 0.75rem 1.5rem;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: rgba(52, 152, 219, 0.1);
+        color: var(--secondary-color);
+      }
+    }
+    
+    .dropdown-divider {
+      margin: 0.5rem 0;
+      opacity: 0.1;
+    }
+  }
+}
+
+// Social links in footer
+.social-links {
+  margin-top: 1rem;
+  
+  a {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 50%;
+    background-color: rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-3px);
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 991.98px) {
+  .main-content {
+    padding-top: 70px;
+  }
+  
+  .navbar-modern {
+    padding: 0.5rem 0;
+    
+    .navbar-nav {
+      .nav-link {
+        padding: 0.75rem 1rem !important;
+        margin: 0.25rem 0;
+        border-radius: 10px;
+      }
+    }
+    
+    .dropdown-menu {
+      position: static !important;
+      float: none;
+      width: auto;
+      margin-top: 0;
+      background-color: rgba(255,255,255,0.1);
+      border: none;
+      box-shadow: none;
+      
+      .dropdown-item {
+        color: rgba(255,255,255,0.9);
+        
+        &:hover {
+          background-color: rgba(255,255,255,0.1);
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 767.98px) {
+  .main-content {
+    padding-top: 60px;
+  }
+  
+  .footer-modern {
+    text-align: center;
+    
+    .col-md-6 {
+      &.text-md-end {
+        text-align: center !important;
+        margin-top: 1rem;
+      }
+    }
+  }
+}

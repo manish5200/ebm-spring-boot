@@ -1,0 +1,41 @@
+.hero-section {
+  min-height: 80vh;
+}
+
+.min-vh-75 {
+  min-height: 75vh;
+}
+
+.feature-card {
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-item {
+  padding: 2rem 1rem;
+}
+
+.feature-icon {
+  transition: all 0.3s ease;
+}
+
+.card:hover .feature-icon {
+  transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 60vh;
+  }
+  
+  .display-4 {
+    font-size: 2rem;
+  }
+  
+  .feature-card {
+    margin-bottom: 1rem;
+  }
+}
