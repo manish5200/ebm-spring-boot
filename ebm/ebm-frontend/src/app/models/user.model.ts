@@ -1,16 +1,13 @@
+
 export interface User {
   id?: number;
-  consumerId: string; // Unique identifier for the user
   username: string;
-  email: string;
-  password?: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  address: string;
-  role: 'CUSTOMER' | 'ADMIN';
-  createdDate?: Date;
-  isActive?: boolean;
+  email?: string;
+  userType: 'CUSTOMER' | 'ADMIN';
+  name?: string;
+  status?: string;
+  department?: string;
+  consumerId?: string; // For customer users
 }
 
 export interface LoginRequest {
@@ -19,17 +16,23 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  token: string;
-  user: User;
-  expiresIn: number;
+  message: string;
+  userType: string;
+  username: string;
+  userId: number;
+  name?: string; // Optional, in case the response includes a name
+  consumerId?: string; // For customer users
 }
 
 export interface RegisterRequest {
   username: string;
   email: string;
   password: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
+  name: string;
+  mobile: string;
   address: string;
+  city: string;
+  state: string;
+  pincode: string;
+  consumerId?: string;
 }

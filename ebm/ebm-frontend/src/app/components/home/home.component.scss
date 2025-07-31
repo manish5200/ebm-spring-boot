@@ -1,11 +1,59 @@
-// Hero Section Styles
+/* =================================================================
+   1. THEME VARIABLES & CONFIG
+   ================================================================= */
+// Using a centralized :root block for easier theme management.
+:root {
+  // Colors
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --primary-color: #667eea;
+  --secondary-color: #764ba2;
+  --dark-color: #343a40;
+  --text-color: #495057;
+  --text-muted: #6c757d;
+  --bg-light: #f8f9fa;
+  --white-color: #ffffff;
+  --border-color: #dee2e6;
+
+  // Shadows
+  --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.1);
+
+  // Transitions
+  --transition-speed: 0.3s;
+}
+
+/* =================================================================
+   2. SCSS MIXINS & PLACEHOLDERS
+   ================================================================= */
+// Mixin for responsive breakpoints for cleaner code
+@mixin breakpoint($point) {
+  @if $point == md {
+    @media (max-width: 768px) { @content; }
+  }
+  @if $point == sm {
+    @media (max-width: 576px) { @content; }
+  }
+}
+
+// Placeholder for consistent section padding
+%section-padding {
+  padding: 5rem 0;
+}
+
+/* =================================================================
+   3. HERO SECTION
+   ================================================================= */
 .hero-section {
+  @extend %section-padding;
+  padding-top: 8rem;
+  padding-bottom: 8rem;
   background: var(--gradient-primary);
-  color: white;
-  padding: 8rem 0 5rem;
+  color: var(--white-color);
   position: relative;
   overflow: hidden;
-  
+  text-align: center;
+
+  // A more subtle, modern background pattern using animated circles
   &::before {
     content: '';
     position: absolute;
@@ -13,212 +61,239 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="rgba(255,255,255,0.1)"><polygon points="1000,100 1000,0 0,100"/></svg>') no-repeat bottom;
-    background-size: cover;
+    background:
+      radial-gradient(circle at 15% 25%, rgba(255, 255, 255, 0.1), transparent 40%),
+      radial-gradient(circle at 85% 65%, rgba(255, 255, 255, 0.08), transparent 50%);
+    animation: pulse 10s ease-in-out infinite;
+  }
+
+  @include breakpoint(md) {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
   }
 }
 
 .hero-icon {
-  font-size: 15rem;
-  color: rgba(255,255,255,0.2);
-  animation: float 3s ease-in-out infinite;
-}
+  font-size: 12rem; // Slightly smaller for a cleaner look
+  color: rgba(255, 255, 255, 0.15);
+  animation: float 4s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  margin-bottom: 2rem;
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-}
-
-.hero-buttons {
-  margin-top: 2rem;
-  
-  .btn {
-    margin: 0.5rem 0;
+  @include breakpoint(md) {
+    font-size: 8rem;
+    margin-top: 1rem;
+  }
+  @include breakpoint(sm) {
+    font-size: 6rem;
   }
 }
 
-// Section Styles
+// Smoother floating animation
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-25px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* =================================================================
+   4. GENERAL SECTION STYLING
+   ================================================================= */
 .section-title {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
+  color: var(--dark-color);
+
+  @include breakpoint(md) {
+    font-size: 2rem;
+  }
 }
 
 .section-subtitle {
   font-size: 1.1rem;
-  color: #6c757d;
+  color: var(--text-muted);
   max-width: 600px;
-  margin: 0 auto;
+  margin: 0 auto 4rem auto; // Increased bottom margin for more space
+
+  @include breakpoint(md) {
+    font-size: 1rem;
+  }
 }
 
-// Statistics Section
+/* =================================================================
+   5. STATISTICS SECTION
+   ================================================================= */
 .stat-card {
   text-align: center;
   padding: 2rem 1rem;
-  
+  transition: transform var(--transition-speed) ease;
+
+  &:hover {
+    transform: translateY(-8px);
+  }
+
   .stat-icon {
     font-size: 3rem;
     color: var(--secondary-color);
     margin-bottom: 1rem;
   }
-  
+
   .stat-number {
-    font-size: 2.5rem;
+    font-size: 2.75rem;
     font-weight: 700;
     color: var(--primary-color);
-    margin-bottom: 0.5rem;
   }
-  
+
   .stat-label {
     font-size: 1.1rem;
-    color: #6c757d;
-    margin-bottom: 0;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  @include breakpoint(md) {
+    margin-bottom: 2rem;
   }
 }
 
-// Step Cards (How It Works)
+/* =================================================================
+   6. HOW IT WORKS / STEPS SECTION
+   ================================================================= */
 .step-card {
   position: relative;
-  padding: 2rem;
-  
+  text-align: center;
+  padding: 2.5rem 2rem;
+  background: var(--white-color);
+  border-radius: 10px;
+  box-shadow: var(--shadow-light);
+  transition: all var(--transition-speed) ease;
+  height: 100%;
+
+  &:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-medium);
+  }
+
   .step-number {
     position: absolute;
-    top: -20px;
+    top: -25px;
     left: 50%;
     transform: translateX(-50%);
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     background: var(--gradient-primary);
-    color: white;
+    color: var(--white-color);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 1.2rem;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    font-size: 1.4rem;
+    border: 3px solid var(--white-color);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   }
-  
+
   .step-icon {
     font-size: 3rem;
     color: var(--secondary-color);
-    margin: 2rem 0 1rem;
+    margin: 1.5rem 0;
   }
-  
+
   .step-title {
     font-size: 1.3rem;
     font-weight: 600;
     color: var(--dark-color);
     margin-bottom: 1rem;
   }
-  
+
   .step-description {
-    color: #6c757d;
-    line-height: 1.6;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  @include breakpoint(md) {
+    margin-bottom: 3rem;
   }
 }
 
-// Testimonial Cards
+/* =================================================================
+   7. TESTIMONIALS SECTION
+   ================================================================= */
 .testimonial-card {
-  background: white;
-  padding: 2rem;
+  background: var(--white-color);
+  padding: 2.5rem;
   border-radius: 15px;
   box-shadow: var(--shadow-light);
-  transition: all 0.3s ease;
+  transition: all var(--transition-speed) ease;
   height: 100%;
-  
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  &::before {
+    content: '\f10d'; // Font Awesome quote-left icon
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    top: 1rem;
+    left: 1.5rem;
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    opacity: 0.1;
+  }
+
   &:hover {
-    transform: translateY(-5px);
+    transform: translateY(-10px);
     box-shadow: var(--shadow-medium);
   }
-  
+
   .testimonial-stars {
-    color: #ffc107;
+    color: #ffc107; // Gold color for stars is standard
     margin-bottom: 1rem;
-    
-    i {
-      margin-right: 0.25rem;
-    }
   }
-  
+
   .testimonial-text {
     font-style: italic;
     margin-bottom: 1.5rem;
-    color: #555;
-    line-height: 1.6;
+    color: var(--text-color);
+    line-height: 1.7;
+    flex-grow: 1; // Allows text to fill space
   }
-  
+
   .testimonial-author {
-    border-top: 1px solid #eee;
-    padding-top: 1rem;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
     
+    .author-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--bg-light); // Placeholder background
+      color: var(--secondary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      font-weight: 600;
+    }
+
     strong {
       display: block;
       color: var(--dark-color);
-      margin-bottom: 0.25rem;
+    }
+
+    span {
+      font-size: 0.9rem;
+      color: var(--text-muted);
     }
   }
-}
 
-// Responsive Design
-@media (max-width: 768px) {
-  .hero-section {
-    padding: 6rem 0 4rem;
-    text-align: center;
-  }
-  
-  .hero-title {
-    font-size: 2.5rem;
-  }
-  
-  .hero-subtitle {
-    font-size: 1rem;
-  }
-  
-  .hero-icon {
-    font-size: 8rem;
-    margin-top: 2rem;
-  }
-  
-  .section-title {
-    font-size: 2rem;
-  }
-  
-  .stat-card {
+  @include breakpoint(md) {
     margin-bottom: 2rem;
-  }
-  
-  .step-card {
-    margin-bottom: 3rem;
-  }
-  
-  .testimonial-card {
-    margin-bottom: 2rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .hero-section {
-    padding: 5rem 0 3rem;
-  }
-  
-  .hero-title {
-    font-size: 2rem;
-  }
-  
-  .hero-buttons {
-    .btn {
-      display: block;
-      margin: 0.5rem 0;
-      width: 100%;
-    }
-  }
-  
-  .section-title {
-    font-size: 1.75rem;
-  }
-  
-  .hero-icon {
-    font-size: 6rem;
   }
 }

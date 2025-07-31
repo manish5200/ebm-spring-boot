@@ -12,6 +12,7 @@ export const routes: Routes = [
   { path: 'customer/bills', canActivate: [CustomerGuard], loadComponent: () => import('./components/customer/customer-bills.component').then(m => m.CustomerBillsComponent) },
   { path: 'admin/dashboard', canActivate: [AdminGuard], loadComponent: () => import('./components/admin/admin-dashboard.component').then(m => m.AdminDashboardComponent) },
   { path: 'admin/users', canActivate: [AdminGuard], loadComponent: () => import('./components/admin/admin-users.component').then(m => m.AdminUsersComponent) },
+  { path: 'admin/customers', canActivate: [AdminGuard], loadComponent: () => import('./components/admin/admin-customers.component').then(m => m.AdminCustomersComponent) },
   { path: 'admin/complaints', canActivate: [AdminGuard], loadComponent: () => import('./components/admin/admin-complaints.component').then(m => m.AdminComplaintsComponent) },
   { path: 'admin/bills', canActivate: [AdminGuard], loadComponent: () => import('./components/admin/admin-bills.component').then(m => m.AdminBillsComponent) },
   { path: '**', redirectTo: '/home' }

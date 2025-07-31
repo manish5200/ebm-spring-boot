@@ -1,5 +1,7 @@
+
 package myApp.ebm.repository;
 import myApp.ebm.model.Customer;
+import myApp.ebm.model.User;
 
 import java.util.Optional;
 
@@ -13,5 +15,7 @@ public interface CustomerRepository extends JpaRepository<Customer,Long> {
 	         boolean existsByConsumerId(String consumerId);
 	         
 	         boolean existsByEmail(String email);
-	
+	         
+	         Customer findByUser(User user);
+
 }

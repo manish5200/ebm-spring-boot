@@ -1,197 +1,266 @@
-<div class="admin-dashboard-bg py-5">
-  <div class="container-fluid">
+
+<div class="admin-dashboard-bg">
+  <div class="container-fluid py-4">
     <!-- Header -->
     <div class="row mb-4">
       <div class="col-12">
         <div class="d-flex justify-content-between align-items-center">
           <div>
-            <h2 class="text-ebm-primary mb-1">Admin Dashboard</h2>
+            <h2 class="mb-1 text-ebm-primary">
+              <i class="fas fa-shield-alt me-2"></i>Admin Dashboard
+            </h2>
             <p class="text-muted mb-0">Welcome back, {{ currentUser?.username }}!</p>
           </div>
-          <div class="text-end">
-            <small class="text-muted">Last updated: {{ getCurrentDateTime() | date:'medium' }}</small>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" (click)="startEditProfile()">
+              <i class="fas fa-user-edit me-2"></i>Edit Profile
+            </button>
+            <button class="btn btn-outline-danger" (click)="logout()">
+              <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </button>
           </div>
         </div>
       </div>
     </div>
-    <!-- Loading State -->
-    <div *ngIf="loading" class="text-center py-5">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+      <div class="col-xl-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0">
+                <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                  <i class="fas fa-users fa-2x text-primary"></i>
+                </div>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <h6 class="card-title text-muted mb-1">Total Customers</h6>
+                <h3 class="mb-0 fw-bold">{{ stats.totalCustomers }}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <p class="mt-3 text-muted">Loading admin dashboard...</p>
+      <div class="col-xl-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0">
+                <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                  <i class="fas fa-file-invoice-dollar fa-2x text-warning"></i>
+                </div>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <h6 class="card-title text-muted mb-1">Pending Bills</h6>
+                <h3 class="mb-0 fw-bold">{{ stats.pendingBills }}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0">
+                <div class="bg-info bg-opacity-10 rounded-circle p-3">
+                  <i class="fas fa-exclamation-triangle fa-2x text-info"></i>
+                </div>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <h6 class="card-title text-muted mb-1">Open Complaints</h6>
+                <h3 class="mb-0 fw-bold">{{ stats.openComplaints }}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0">
+                <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                  <i class="fas fa-rupee-sign fa-2x text-success"></i>
+                </div>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <h6 class="card-title text-muted mb-1">Total Revenue</h6>
+                <h3 class="mb-0 fw-bold">{{ formatCurrency(stats.totalRevenue) }}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <!-- Dashboard Content -->
-    <div *ngIf="!loading">
-      <!-- Statistics Cards -->
-      <div class="row g-4 mb-5">
-        <div class="col-lg-3 col-md-6">
-          <div class="card border-0 shadow-sm card-hover h-100 glass-card">
-            <div class="card-body text-center">
-              <div class="feature-icon bg-primary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                <i class="fas fa-users fs-4"></i>
-              </div>
-              <h4 class="card-title text-ebm-primary">Total Customers</h4>
-              <p class="display-6 fw-bold text-primary">0</p>
-              <small class="text-muted">Registered customers</small>
-            </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white border-bottom">
+            <h5 class="mb-0 text-ebm-primary">
+              <i class="fas fa-cogs me-2"></i>Quick Actions
+            </h5>
           </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-          <div class="card border-0 shadow-sm card-hover h-100 glass-card">
-            <div class="card-body text-center">
-              <div class="feature-icon bg-success text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                <i class="fas fa-file-invoice-dollar fs-4"></i>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-lg-3 col-md-6">
+                <a routerLink="/admin/customers" class="btn btn-outline-primary w-100 py-3">
+                  <i class="fas fa-users d-block fs-2 mb-2"></i>
+                  Manage Customers
+                </a>
               </div>
-              <h4 class="card-title text-ebm-primary">Total Bills</h4>
-              <p class="display-6 fw-bold text-success">0</p>
-              <small class="text-muted">Generated bills</small>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-          <div class="card border-0 shadow-sm card-hover h-100 glass-card">
-            <div class="card-body text-center">
-              <div class="feature-icon bg-warning text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                <i class="fas fa-exclamation-triangle fs-4"></i>
+              <div class="col-lg-3 col-md-6">
+                <a routerLink="/admin/bills" class="btn btn-outline-success w-100 py-3">
+                  <i class="fas fa-file-invoice-dollar d-block fs-2 mb-2"></i>
+                  Manage Bills
+                </a>
               </div>
-              <h4 class="card-title text-ebm-primary">Pending Complaints</h4>
-              <p class="display-6 fw-bold text-warning">0</p>
-              <small class="text-muted">Awaiting response</small>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-          <div class="card border-0 shadow-sm card-hover h-100 glass-card">
-            <div class="card-body text-center">
-              <div class="feature-icon bg-info text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                <i class="fas fa-chart-line fs-4"></i>
-              </div>
-              <h4 class="card-title text-ebm-primary">Revenue</h4>
-              <p class="display-6 fw-bold text-info">₹0</p>
-              <small class="text-muted">Total collection</small>
+              <div class="col-lg-3 col-md-6">
+                <a routerLink="/admin/complaints" class="btn btn-outline-warning w-100 py-3">
+                  <i class="fas fa-exclamation-triangle d-block fs-2 mb-2"></i>
+                  Handle Complaints
+                </a>
+              <!-- </div>
+              <div class="col-lg-3 col-md-6">
+                <a routerLink="/admin/reports" class="btn btn-outline-info w-100 py-3">
+                  <i class="fas fa-chart-bar d-block fs-2 mb-2"></i>
+                  View Reports
+                </a>
+              </div> -->
             </div>
           </div>
         </div>
       </div>
-      <!-- Quick Actions -->
-      <div class="row g-4 mb-5">
-        <div class="col-12">
-          <div class="card border-0 shadow-sm glass-card">
-            <div class="card-header bg-white">
-              <h5 class="card-title mb-0 text-ebm-primary">
-                <i class="fas fa-bolt me-2"></i>Quick Actions
-              </h5>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row g-4">
+      <!-- Recent Bills -->
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-ebm-primary">
+              <i class="fas fa-file-invoice me-2"></i>Recent Bills
+            </h5>
+            <a routerLink="/admin/bills" class="btn btn-sm btn-outline-primary">
+              <i class="fas fa-external-link-alt me-1"></i>View All
+            </a>
+          </div>
+          <div class="card-body">
+            <div *ngIf="recentBills.length === 0" class="text-center py-4">
+              <i class="fas fa-inbox fs-1 text-muted mb-3"></i>
+              <p class="text-muted">No bills found</p>
             </div>
-            <div class="card-body">
-              <div class="row g-3">
-                <div class="col-md-3">
-                  <button class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
-                    <i class="fas fa-user-plus fs-2 mb-2"></i>
-                    <span>Add Customer</span>
-                  </button>
-                </div>
-                <div class="col-md-3">
-                  <button class="btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
-                    <i class="fas fa-file-invoice fs-2 mb-2"></i>
-                    <span>Generate Bill</span>
-                  </button>
-                </div>
-                <div class="col-md-3">
-                  <button class="btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
-                    <i class="fas fa-comments fs-2 mb-2"></i>
-                    <span>View Complaints</span>
-                  </button>
-                </div>
-                <div class="col-md-3">
-                  <button class="btn btn-outline-info w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
-                    <i class="fas fa-chart-bar fs-2 mb-2"></i>
-                    <span>Reports</span>
-                  </button>
-                </div>
+            <div *ngFor="let bill of recentBills" class="d-flex justify-content-between align-items-center py-3 border-bottom">
+              <div>
+                <h6 class="mb-1">{{ bill.billingMonth }}</h6>
+                <small class="text-muted">
+                                      <i class="fas fa-hashtag me-1"></i>{{ bill.billId }}
+                </small>
+                <br>
+                <small class="text-muted">
+                  <i class="fas fa-calendar me-1"></i>Due: {{ formatDate(bill.dueDate) }}
+                </small>
+              </div>
+              <div class="text-end">
+                <h6 class="mb-1">{{ formatCurrency(bill.amountDue) }}</h6>
+                <span class="badge" [class]="getStatusBadgeClass(bill.status)">
+                  <i class="fas fa-circle me-1"></i>{{ bill.status }}
+                </span>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <!-- Recent Activity -->
-      <div class="row g-4">
-        <div class="col-lg-8">
-          <div class="card border-0 shadow-sm glass-card">
-            <div class="card-header bg-white">
-              <h5 class="card-title mb-0 text-ebm-primary">
-                <i class="fas fa-clock me-2"></i>Recent Activity
-              </h5>
+
+      <!-- Recent Complaints -->
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-ebm-primary">
+              <i class="fas fa-exclamation-triangle me-2"></i>Recent Complaints
+            </h5>
+            <a routerLink="/admin/complaints" class="btn btn-sm btn-outline-primary">
+              <i class="fas fa-external-link-alt me-1"></i>View All
+            </a>
+          </div>
+          <div class="card-body">
+            <div *ngIf="recentComplaints.length === 0" class="text-center py-4">
+              <i class="fas fa-inbox fs-1 text-muted mb-3"></i>
+              <p class="text-muted">No complaints found</p>
             </div>
-            <div class="card-body">
-              <div class="text-center text-muted py-4">
-                <i class="fas fa-inbox fs-1 mb-3"></i>
-                <p>No recent activity to display</p>
+            <div *ngFor="let complaint of recentComplaints" class="d-flex justify-content-between align-items-center py-3 border-bottom">
+              <div>
+                <h6 class="mb-1">{{ complaint.type }}</h6>
+                <small class="text-muted">
+                                      <i class="fas fa-hashtag me-1"></i>{{ complaint.complaintId }}
+                </small>
+                <br>
+                <small class="text-muted">
+                  <i class="fas fa-calendar me-1"></i>{{ formatDate(complaint.createdAt) }}
+                </small>
+              </div>
+              <div class="text-end">
+                <span class="badge" [class]="getStatusBadgeClass(complaint.status)">
+                  <i class="fas fa-circle me-1"></i>{{ complaint.status }}
+                </span>
               </div>
             </div>
           </div>
         </div>
-        <!-- Admin Profile Section -->
-        <div class="row mb-4">
-          <div class="col-lg-6 mx-auto">
-            <div class="card border-0 shadow-sm glass-card">
-              <div class="card-header bg-white">
-                <h5 class="mb-0 text-ebm-primary">
-                  <i class="fas fa-user-shield me-2"></i>My Profile
-                </h5>
-              </div>
-              <div class="card-body">
-                <form *ngIf="profileEditMode" (ngSubmit)="saveProfile()">
-                  <div class="row g-3">
-                    <div class="col-md-6">
-                      <label class="form-label">Name</label>
-                      <input type="text" class="form-control" [(ngModel)]="profileFormData.name" name="name" required />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label">Email</label>
-                      <input type="email" class="form-control" [(ngModel)]="profileFormData.email" name="email" required />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label">Phone</label>
-                      <input type="text" class="form-control" [(ngModel)]="profileFormData.phoneNumber" name="phoneNumber" required />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label">Address</label>
-                      <input type="text" class="form-control" [(ngModel)]="profileFormData.address" name="address" required />
-                    </div>
-                  </div>
-                  <div class="mt-3">
-                    <button type="submit" class="btn btn-success">Save Changes</button>
-                    <button type="button" class="btn btn-outline-secondary ms-2" (click)="cancelEditProfile()">Cancel</button>
-                  </div>
-                  <div *ngIf="profileUpdateSuccess" class="alert alert-success mt-3">{{ profileUpdateSuccess }}</div>
-                  <div *ngIf="profileUpdateError" class="alert alert-danger mt-3">{{ profileUpdateError }}</div>
-                </form>
-                <div *ngIf="!profileEditMode">
-                  <div class="row g-3">
-                    <div class="col-md-6">
-                      <strong>Name:</strong> {{ currentUser?.firstName }} {{ currentUser?.lastName }}
-                    </div>
-                    <div class="col-md-6">
-                      <strong>Email:</strong> {{ currentUser?.email }}
-                    </div>
-                    <div class="col-md-6">
-                      <strong>Phone:</strong> {{ currentUser?.phoneNumber }}
-                    </div>
-                    <div class="col-md-6">
-                      <strong>Address:</strong> {{ currentUser?.address }}
-                    </div>
-                  </div>
-                  <div class="mt-3 text-end">
-                    <button class="btn btn-outline-primary btn-sm" (click)="startEditProfile()">
-                      <i class="fas fa-edit me-1"></i>Edit
-                    </button>
-                  </div>
-                </div>
-              </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Edit Modal -->
+<div class="modal fade" id="profileModal" tabindex="-1" *ngIf="profileEditMode">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-user-edit me-2"></i>Edit Profile
+        </h5>
+        <button type="button" class="btn-close" (click)="cancelEditProfile()"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-control" [(ngModel)]="profileFormData.name" name="name">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" [(ngModel)]="profileFormData.email" name="email">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Department</label>
+              <input type="text" class="form-control" [(ngModel)]="profileFormData.department" name="department">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Mobile</label>
+              <input type="text" class="form-control" [(ngModel)]="profileFormData.mobile" name="mobile">
             </div>
           </div>
+        </form>
+        <div *ngIf="profileUpdateSuccess" class="alert alert-success mt-3">
+          <i class="fas fa-check-circle me-2"></i>{{ profileUpdateSuccess }}
         </div>
+        <div *ngIf="profileUpdateError" class="alert alert-danger mt-3">
+          <i class="fas fa-exclamation-circle me-2"></i>{{ profileUpdateError }}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelEditProfile()">
+          <i class="fas fa-times me-2"></i>Cancel
+        </button>
+        <button type="button" class="btn btn-primary" (click)="saveProfile()">
+          <i class="fas fa-save me-2"></i>Save Changes
+        </button>
       </div>
     </div>
   </div>

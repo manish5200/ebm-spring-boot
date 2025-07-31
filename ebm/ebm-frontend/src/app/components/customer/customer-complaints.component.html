@@ -1,54 +1,413 @@
-<div class="container mt-4">
-  <h2 class="mb-4">My Complaints</h2>
-  <div *ngIf="loading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
+
+<div class="container-fluid">
+  <!-- Header Section with Icons -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h2 class="mb-0 text-ebm-primary">
+            <i class="fas fa-headset me-2"></i>My Complaints
+          </h2>
+          <p class="text-muted mb-0">Track and manage your service complaints</p>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-primary" (click)="refreshComplaints()" title="Refresh Complaints">
+            <i class="fas fa-sync-alt me-1"></i>Refresh
+          </button>
+          <button class="btn btn-success" (click)="openFileComplaintModal()" title="File New Complaint">
+            <i class="fas fa-plus me-1"></i>File Complaint
+          </button>
+        </div>
+      </div>
     </div>
-    <p class="mt-3 text-muted">Loading complaints...</p>
   </div>
-  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
-  <div *ngIf="success" class="alert alert-success">{{ success }}</div>
-  <table class="table table-hover table-bordered" *ngIf="!loading && complaints.length">
-    <thead class="table-light">
-      <tr>
-        <th>#</th>
-        <th>Type</th>
-        <th>Category</th>
-        <th>Description</th>
-        <th>Status</th>
-        <th>Admin Response</th>
-        <th>Date</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let complaint of complaints; let i = index">
-        <td>{{ i + 1 }}</td>
-        <td>{{ complaint.type }}</td>
-        <td>{{ complaint.category }}</td>
-        <td *ngIf="editComplaintId !== complaint.complaintId">{{ complaint.problem }}</td>
-        <td *ngIf="editComplaintId === complaint.complaintId">
-          <input class="form-control" [(ngModel)]="editForm.problem" />
-        </td>
-        <td>{{ complaint.status }}</td>
-        <td>{{ complaint.adminResponse || '-' }}</td>
-        <td>{{ complaint.createdAt | date:'medium' }}</td>
-        <td>
-          <button *ngIf="editComplaintId !== complaint.complaintId && complaint.status === 'OPEN'" class="btn btn-sm btn-primary me-2" (click)="startEdit(complaint)">
-            <i class="fas fa-edit"></i> Edit
-          </button>
-          <button *ngIf="editComplaintId === complaint.complaintId" class="btn btn-sm btn-success me-2" (click)="saveEdit()">
-            <i class="fas fa-save"></i> Save
-          </button>
-          <button *ngIf="editComplaintId === complaint.complaintId" class="btn btn-sm btn-secondary me-2" (click)="cancelEdit()">
-            <i class="fas fa-times"></i> Cancel
-          </button>
-          <button *ngIf="complaint.status === 'OPEN'" class="btn btn-sm btn-danger" (click)="deleteComplaint(complaint.complaintId)">
-            <i class="fas fa-trash"></i> Delete
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <div *ngIf="!loading && !complaints.length" class="alert alert-info">No complaints found.</div>
+
+  <!-- Stats Cards with Icons -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card bg-primary text-white border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h4 class="mb-0">{{ getTotalComplaintsCount() }}</h4>
+              <small>Total Complaints</small>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-clipboard-list fa-2x"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-warning text-white border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h4 class="mb-0">{{ getOpenComplaintsCount() }}</h4>
+              <small>Open Complaints</small>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-clock fa-2x"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-info text-white border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h4 class="mb-0">{{ getInProgressComplaintsCount() }}</h4>
+              <small>In Progress</small>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-tools fa-2x"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-success text-white border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h4 class="mb-0">{{ getResolvedComplaintsCount() }}</h4>
+              <small>Resolved</small>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-check-circle fa-2x"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Section with Icons -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-light">
+          <h6 class="mb-0">
+            <i class="fas fa-filter me-2"></i>Filter Complaints
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">
+                <i class="fas fa-search me-1"></i>Search
+              </label>
+              <input type="text" class="form-control" placeholder="Search complaints..." 
+                     [(ngModel)]="searchTerm" (input)="applyFilters()">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">
+                <i class="fas fa-tag me-1"></i>Status
+              </label>
+              <select class="form-select" [(ngModel)]="statusFilter" (change)="applyFilters()">
+                <option value="">All Status</option>
+                <option value="OPEN">Open</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="RESOLVED">Resolved</option>
+                <option value="CLOSED">Closed</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">
+                <i class="fas fa-folder me-1"></i>Category
+              </label>
+              <select class="form-select" [(ngModel)]="categoryFilter" (change)="applyFilters()">
+                <option value="">All Categories</option>
+                <option value="Technical">Technical</option>
+                <option value="Billing">Billing</option>
+                <option value="Service">Service</option>
+                <option value="Infrastructure">Infrastructure</option>
+                <option value="General">General</option>
+              </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+              <button class="btn btn-outline-secondary w-100" (click)="clearFilters()">
+                <i class="fas fa-times me-1"></i>Clear
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Complaints Table with Icons -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">
+            <i class="fas fa-list me-2"></i>My Complaints
+          </h6>
+          <span class="badge bg-primary">{{ filteredComplaints.length }} complaints</span>
+        </div>
+        <div class="card-body">
+          <!-- Loading State -->
+          <div *ngIf="loading" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3 text-muted">
+              <i class="fas fa-spinner fa-spin me-2"></i>Loading complaints...
+            </p>
+          </div>
+
+          <!-- Error State -->
+          <div *ngIf="!loading && error" class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>{{ error }}
+          </div>
+
+          <!-- Complaints Table -->
+          <div *ngIf="!loading && !error" class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>
+                    <i class="fas fa-hashtag me-1"></i>Complaint ID
+                  </th>
+                  <th>
+                    <i class="fas fa-exclamation-triangle me-1"></i>Type
+                  </th>
+                  <th>
+                    <i class="fas fa-folder me-1"></i>Category
+                  </th>
+                  <th>
+                    <i class="fas fa-comment me-1"></i>Problem
+                  </th>
+                  <th>
+                    <i class="fas fa-map-marker-alt me-1"></i>Landmark
+                  </th>
+                  <th>
+                    <i class="fas fa-calendar me-1"></i>Created
+                  </th>
+                  <th>
+                    <i class="fas fa-tag me-1"></i>Status
+                  </th>
+                  <th>
+                    <i class="fas fa-cogs me-1"></i>Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let complaint of filteredComplaints">
+                  <td>
+                    <strong class="text-primary">{{ complaint.complaintId }}</strong>
+                  </td>
+                  <td>{{ complaint.type }}</td>
+                  <td>
+                    <span class="badge bg-secondary">{{ complaint.category }}</span>
+                  </td>
+                  <td>
+                    <div class="text-truncate" style="max-width: 200px;" title="{{ complaint.problem }}">
+                      {{ complaint.problem }}
+                    </div>
+                  </td>
+                  <td>{{ complaint.landmark }}</td>
+                  <td>
+                    <div>{{ formatDate(complaint.createdAt) }}</div>
+                    <small class="text-muted">{{ getDaysSinceCreated(complaint.createdAt) }}</small>
+                  </td>
+                  <td>
+                    <span [class]="getStatusBadgeClass(complaint.status)">
+                      <i class="fas" [ngClass]="{
+                        'fa-clock': complaint.status === 'OPEN',
+                        'fa-tools': complaint.status === 'IN_PROGRESS',
+                        'fa-check': complaint.status === 'RESOLVED',
+                        'fa-times': complaint.status === 'CLOSED'
+                      }"></i>
+                      {{ complaint.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="btn-group" role="group">
+                      <button class="btn btn-sm btn-outline-primary" (click)="viewComplaintDetails(complaint)" title="View Details">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-danger" (click)="deleteComplaint(complaint)" title="Delete Complaint">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="!loading && !error && filteredComplaints.length === 0" class="text-center py-5">
+            <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+            <h5 class="text-muted">No complaints found</h5>
+            <p class="text-muted">You haven't filed any complaints yet</p>
+                         <button class="btn btn-primary" (click)="openFileComplaintModal()">
+              <i class="fas fa-plus me-2"></i>File Your First Complaint
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- File Complaint Modal with Icons -->
+<div class="modal fade" id="fileComplaintModal" tabindex="-1" [class.show]="showFileComplaintModal" [style.display]="showFileComplaintModal ? 'block' : 'none'">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">
+          <i class="fas fa-plus-circle me-2"></i>File New Complaint
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeFileComplaintModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="complaintForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">
+                  <i class="fas fa-exclamation-triangle me-1"></i>Complaint Type
+                </label>
+                <select class="form-select" formControlName="type">
+                  <option value="">Select Type</option>
+                  <option *ngFor="let type of complaintTypes" [value]="type">{{ type }}</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">
+                  <i class="fas fa-folder me-1"></i>Category
+                </label>
+                <select class="form-select" formControlName="category">
+                  <option value="">Select Category</option>
+                  <option *ngFor="let category of complaintCategories" [value]="category">{{ category }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">
+                  <i class="fas fa-map-marker-alt me-1"></i>Landmark
+                </label>
+                <input type="text" class="form-control" placeholder="Enter landmark or location" formControlName="landmark">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <div class="mb-3">
+                <label class="form-label">
+                  <i class="fas fa-comment me-1"></i>Problem Description
+                </label>
+                <textarea class="form-control" rows="4" placeholder="Describe your problem in detail..." formControlName="problem"></textarea>
+                <small class="text-muted">Minimum 10 characters required</small>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div *ngIf="fileError" class="alert alert-danger">
+          <i class="fas fa-exclamation-circle me-2"></i>{{ fileError }}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeFileComplaintModal()">
+          <i class="fas fa-times me-1"></i>Cancel
+        </button>
+        <button type="button" class="btn btn-success" (click)="fileComplaint()" [disabled]="filing || complaintForm.invalid">
+          <i class="fas" [ngClass]="filing ? 'fa-spinner fa-spin' : 'fa-paper-plane'"></i>
+          {{ filing ? 'Filing...' : 'File Complaint' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Complaint Details Modal with Icons -->
+<div class="modal fade" id="complaintDetailsModal" tabindex="-1" [class.show]="selectedComplaint" [style.display]="selectedComplaint ? 'block' : 'none'">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">
+          <i class="fas fa-clipboard-list me-2"></i>Complaint Details
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeDetailsModal()"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedComplaint">
+        <div class="row">
+          <div class="col-md-6">
+            <p><strong><i class="fas fa-hashtag me-1"></i>Complaint ID:</strong> {{ selectedComplaint.complaintId }}</p>
+            <p><strong><i class="fas fa-exclamation-triangle me-1"></i>Type:</strong> {{ selectedComplaint.type }}</p>
+            <p><strong><i class="fas fa-folder me-1"></i>Category:</strong> {{ selectedComplaint.category }}</p>
+            <p><strong><i class="fas fa-map-marker-alt me-1"></i>Landmark:</strong> {{ selectedComplaint.landmark }}</p>
+          </div>
+          <div class="col-md-6">
+            <p><strong><i class="fas fa-tag me-1"></i>Status:</strong> 
+              <span [class]="getStatusBadgeClass(selectedComplaint.status)">
+                {{ selectedComplaint.status }}
+              </span>
+            </p>
+            <p><strong><i class="fas fa-calendar-plus me-1"></i>Created:</strong> {{ formatDate(selectedComplaint.createdAt) }}</p>
+            <p><strong><i class="fas fa-calendar-check me-1"></i>Updated:</strong> {{ formatDate(selectedComplaint.updatedAt) }}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <p><strong><i class="fas fa-comment me-1"></i>Problem:</strong></p>
+            <div class="alert alert-light">
+              {{ selectedComplaint.problem }}
+            </div>
+          </div>
+        </div>
+        <div class="row" *ngIf="selectedComplaint.adminResponse">
+          <div class="col-12">
+            <p><strong><i class="fas fa-reply me-1"></i>Admin Response:</strong></p>
+            <div class="alert alert-info">
+              {{ selectedComplaint.adminResponse }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeDetailsModal()">
+          <i class="fas fa-times me-1"></i>Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal with Icons -->
+<div class="modal fade" id="deleteComplaintModal" tabindex="-1" [class.show]="confirmDeleteComplaint" [style.display]="confirmDeleteComplaint ? 'block' : 'none'">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">
+          <i class="fas fa-exclamation-triangle me-2"></i>Confirm Delete
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cancelDelete()"></button>
+      </div>
+      <div class="modal-body" *ngIf="confirmDeleteComplaint">
+        <p>Are you sure you want to delete complaint <strong>{{ confirmDeleteComplaint.complaintId }}</strong>?</p>
+        <p class="text-muted">This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelDelete()">
+          <i class="fas fa-times me-1"></i>Cancel
+        </button>
+        <button type="button" class="btn btn-danger" (click)="confirmDelete()">
+          <i class="fas fa-trash me-1"></i>Delete Complaint
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

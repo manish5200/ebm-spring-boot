@@ -1,50 +1,46 @@
 export interface Complaint {
-  id?: number;
   complaintId: string;
+  customerName: string;
   type: string;
-  description: string;
   category: string;
   problem: string;
-  createdDate: Date; // Confirmed: Use createdDate
+  landmark: string;
   status: ComplaintStatus;
-  adminResponse?: string; // ADDED: To store/pre-fill admin's response
-  customerName?: string; // ADDED: For display in the table
-  // Add any other complaint properties you might have
+  adminResponse?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
-
-export enum ComplaintCategory {
-  BILLING = 'BILLING',
-  POWER_OUTAGE = 'POWER_OUTAGE',
-  METER_READING = 'METER_READING',
-  CONNECTION = 'CONNECTION',
-  TECHNICAL = 'TECHNICAL',
-  OTHER = 'OTHER'
-}
-
-// export enum ComplaintPriority {
-//   LOW = 'LOW',
-//   MEDIUM = 'MEDIUM',
-//   HIGH = 'HIGH',
-//   URGENT = 'URGENT'
-// }
 
 export enum ComplaintStatus {
-  PENDING = 'PENDING',
+  OPEN = 'OPEN',
   IN_PROGRESS = 'IN_PROGRESS',
   RESOLVED = 'RESOLVED',
-  CLOSED = 'CLOSED',
-  OPEN = 'OPEN'
+  CLOSED = 'CLOSED'
 }
 
 export interface ComplaintRequest {
-  title: string;
-  description: string;
-  category: ComplaintCategory;
- // priority: ComplaintPriority;
+  consumerId: string; // Add consumerId for backend
+  type: string;
+  category: string;
+  problem: string;
+  landmark: string;
 }
 
 export interface ComplaintResponse {
   complaintId: string;
-  response: string;
+  customerName: string;
+  type: string;
+  category: string;
+  problem: string;
+  landmark: string;
   status: ComplaintStatus;
+  adminResponse?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UpdateComplaintStatusRequest {
+  complaintId: string;
+  status: ComplaintStatus;
+  adminResponse?: string;
 }

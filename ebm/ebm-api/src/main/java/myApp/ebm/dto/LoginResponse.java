@@ -7,23 +7,37 @@ package myApp.ebm.dto;
 public class LoginResponse {
                
 	    private String message; // e.g. "Login successful"
-	    private String userType; // e.g. "CUSTOMER" or "LOGIN"
+	    private String userType; // e.g. "CUSTOMER" or "ADMIN"
 	    private String username;
 	    private Long userId;
+	    private String name;
+	    private String consumerId; // For customer users
 	    
 	    
 	    public LoginResponse() {}
 	    
-		public LoginResponse(String message,String username, String userType, Long userId) {
+		
+		public LoginResponse(String message, String userType, String username, Long userId, String name,
+				String consumerId) {
 			super();
 			this.message = message;
 			this.userType = userType;
+			this.username = username;
 			this.userId = userId;
-			this.username=username;
+			this.name = name;
+			this.consumerId = consumerId;
 		}
-		
+
 		
 		//Getters and Setters 
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
 
 		public String getMessage() {
 			return message;
@@ -56,7 +70,14 @@ public class LoginResponse {
 		public void setUsername(String username) {
 			this.username = username;
 		}
-	    
+		
+		public String getConsumerId() {
+			return consumerId;
+		}
+
+		public void setConsumerId(String consumerId) {
+			this.consumerId = consumerId;
+		}
 	      
 		  
 	      

@@ -1,3 +1,4 @@
+
 package myApp.ebm.service;
 
 import myApp.ebm.dto.bill.*;
@@ -15,6 +16,8 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.HashMap;
 
 @Service
 public class BillService {
@@ -50,6 +53,17 @@ public class BillService {
 
         Bill saved = billRepo.save(bill);
         return toDto(saved);
+    }
+
+    /**
+     * View all bills (admin only).
+     */
+    public List<BillResponse> getAllBills() {
+        List<Bill> bills = billRepo.findAll();
+        return bills.stream()
+                .sorted(Comparator.comparing(Bill::getIssueDate).reversed())
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -143,6 +157,96 @@ public class BillService {
         Bill bill = billRepo.findByBillId(billId)
             .orElseThrow(() -> new BillNotFoundException(billId));
         billRepo.delete(bill);
+    }
+
+    /**
+     * Get bill by ID
+     */
+    public BillResponse getBillById(String billId) {
+        Bill bill = billRepo.findByBillId(billId)
+            .orElseThrow(() -> new BillNotFoundException(billId));
+        return toDto(bill);
+    }
+
+    /**
+     * Update a bill (admin only)
+     */
+    @Transactional
+    public BillResponse updateBill(String billId, CreateBillRequest req) {
+        Bill bill = billRepo.findByBillId(billId)
+            .orElseThrow(() -> new BillNotFoundException(billId));
+        
+        Customer customer = customerRepo.findByConsumerId(req.getConsumerId())
+            .orElseThrow(() -> new CustomerNotFoundException(req.getConsumerId()));
+        
+        bill.setCustomer(customer);
+        bill.setBillingMonth(req.getBillingMonth());
+        bill.setAmountDue(req.getAmountDue());
+        bill.setIssueDate(req.getIssueDate());
+        bill.setDueDate(req.getDueDate());
+        
+        Bill updated = billRepo.save(bill);
+        return toDto(updated);
+    }
+
+    /**
+     * Get bills by status
+     */
+    public List<BillResponse> getBillsByStatus(String status) {
+        List<Bill> bills = billRepo.findByStatus(status);
+        return bills.stream()
+                .sorted(Comparator.comparing(Bill::getIssueDate).reversed())
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get bill statistics
+     */
+    public Map<String, Object> getBillStats() {
+        long totalBills = billRepo.count();
+        long pendingBills = billRepo.countByStatus("PENDING");
+        long paidBills = billRepo.countByStatus("PAID");
+        long overdueBills = billRepo.countByStatus("OVERDUE");
+        
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalBills", totalBills);
+        stats.put("pendingBills", pendingBills);
+        stats.put("paidBills", paidBills);
+        stats.put("overdueBills", overdueBills);
+        stats.put("totalRevenue", billRepo.sumAmountDueByStatus("PAID"));
+        
+        return stats;
+    }
+
+    /**
+     * Get all payment history (admin)
+     */
+    public List<PaymentResponse> getAllPaymentHistory() {
+        List<Bill> paidBills = billRepo.findByStatus("PAID");
+        return paidBills.stream()
+                .sorted(Comparator.comparing(Bill::getPaymentDate).reversed())
+                .map(bill -> new PaymentResponse(
+                    "Payment completed",
+                    bill.getPaymentId(),
+                    bill.getStatus()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get payment history for a specific customer
+     */
+    public List<PaymentResponse> getCustomerPaymentHistory(String consumerId) {
+        List<Bill> paidBills = billRepo.findByCustomerConsumerIdAndStatus(consumerId, "PAID");
+        return paidBills.stream()
+                .sorted(Comparator.comparing(Bill::getPaymentDate).reversed())
+                .map(bill -> new PaymentResponse(
+                    "Payment completed",
+                    bill.getPaymentId(),
+                    bill.getStatus()
+                ))
+                .collect(Collectors.toList());
     }
 
     /** Helper to map entity → DTO */

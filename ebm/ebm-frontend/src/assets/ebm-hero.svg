@@ -1,0 +1,58 @@
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" aria-label="An illustration of a house with an energy wave flowing towards a digital bill, representing electricity bill management.">
+  <defs>
+    <!-- Defines the primary gradient used for most elements -->
+    <linearGradient id="ebmGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color: #6366f1; stop-opacity: 1" />
+      <stop offset="100%" style="stop-color: #06b6d4; stop-opacity: 1" />
+    </linearGradient>
+    <!-- Defines a lighter gradient for glow effects -->
+    <linearGradient id="glowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color: #818cf8; stop-opacity: 1" />
+      <stop offset="100%" style="stop-color: #22d3ee; stop-opacity: 1" />
+    </linearGradient>
+    <!-- A filter to create a soft glow effect -->
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.8 0" result="glow" />
+      <feComposite in="glow" in2="SourceGraphic" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background abstract shapes for depth -->
+  <circle cx="150" cy="200" r="200" fill="url(#glowGradient)" opacity="0.2" filter="url(#softGlow)" />
+  <circle cx="650" cy="400" r="150" fill="url(#ebmGradient)" opacity="0.2" filter="url(#softGlow)" />
+
+  <!-- Main illustration group -->
+  <g transform="translate(50, 50)">
+    
+    <!-- House/Building outline -->
+    <g>
+      <path d="M 250,500 L 250,300 L 450,300 L 450,500 M 200,300 L 500,300 L 350,180 Z" 
+            fill="rgba(255,255,255,0.05)" stroke="url(#ebmGradient)" stroke-width="4" stroke-linejoin="round" />
+      <rect x="320" y="400" width="40" height="60" fill="url(#ebmGradient)" rx="5" />
+    </g>
+
+    <!-- Flowing energy wave representing power and data -->
+    <g>
+      <path d="M 50,150 C 150,50 350,50 450,150 S 650,250 700,350" 
+            fill="none" stroke="url(#ebmGradient)" stroke-width="12" stroke-linecap="round" filter="url(#softGlow)" />
+      
+      <!-- Small circles representing data points along the wave -->
+      <circle cx="150" cy="77" r="8" fill="#fff"/>
+      <circle cx="350" cy="90" r="8" fill="#fff"/>
+      <circle cx="550" cy="195" r="8" fill="#fff"/>
+
+      <!-- Small lightning bolt icon on the energy wave -->
+      <path d="M 440 140 L 460 160 L 450 175 L 470 195" fill="none" stroke="#fde047" stroke-width="6" stroke-linecap="round"/>
+    </g>
+
+    <!-- Abstract UI element representing a digital bill or interface -->
+    <g transform="translate(500, 350)">
+      <rect width="200" height="120" rx="10" fill="rgba(255,255,255,0.1)" stroke="url(#ebmGradient)" stroke-width="2"/>
+      <rect x="20" y="20" width="100" height="10" rx="3" fill="url(#glowGradient)" opacity="0.8"/>
+      <rect x="20" y="45" width="160" height="8" rx="3" fill="url(#glowGradient)" opacity="0.5"/>
+      <rect x="20" y="65" width="160" height="8" rx="3" fill="url(#glowGradient)" opacity="0.5"/>
+      <rect x="20" y="85" width="80" height="8" rx="3" fill="url(#glowGradient)" opacity="0.5"/>
+    </g>
+  </g>
+</svg>

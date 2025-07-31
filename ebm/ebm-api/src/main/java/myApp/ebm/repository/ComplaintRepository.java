@@ -12,5 +12,9 @@ public interface ComplaintRepository extends JpaRepository<Complaint,Long>{
 	       
 	       List<Complaint>findByCustomerConsumerIdAndStatus(String consumerId, String status);
 
-		   Optional<Complaint> findByCustomerConsumerId(String consumerId);
+		   //Optional<Complaint> findByCustomerConsumerId(String consumerId);
+	       
+	       // --- THIS IS THE FIX ---
+	       // Change the return type from Optional<Complaint> to List<Complaint>
+	       List<Complaint> findByCustomerConsumerId(String consumerId);
 }

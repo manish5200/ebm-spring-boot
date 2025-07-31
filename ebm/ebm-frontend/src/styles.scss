@@ -1,8 +1,7 @@
-/* Bootstrap and FontAwesome imports */
-// After (assuming bootstrap and ngx-toastr expose their styles via Sass modules):
-@use 'bootstrap/scss/bootstrap';
-@use 'ngx-toastr/toastr';
-@use 'font-awesome/css/font-awesome.css';
+@use 'bootstrap/scss/bootstrap' as *;
+@use 'ngx-toastr/toastr' as *;
+
+/* You can add global styles to this file, and also import other style files */
 
 /* Custom EBM Theme Variables */
 :root {

@@ -1,0 +1,344 @@
+<div class="container-fluid">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h2 class="mb-0">
+            <i class="fas fa-users me-2"></i>Customer Management
+          </h2>
+          <p class="text-muted mb-0">Manage all registered customers</p>
+        </div>
+        <div>
+          <button class="btn btn-primary me-2" (click)="refreshCustomers()" [disabled]="loading">
+            <i class="fas fa-sync-alt me-1"></i>Refresh
+          </button>
+          <button class="btn btn-outline-secondary" (click)="clearFilters()">
+            <i class="fas fa-filter me-1"></i>Clear Filters
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card bg-primary text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h4 class="mb-0">{{ getTotalCustomersCount() }}</h4>
+              <p class="mb-0">Total Customers</p>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-users fa-2x"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-success text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h4 class="mb-0">{{ getActiveCustomersCount() }}</h4>
+              <p class="mb-0">Active Customers</p>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-user-check fa-2x"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-warning text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h4 class="mb-0">{{ getInactiveCustomersCount() }}</h4>
+              <p class="mb-0">Inactive Customers</p>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-user-times fa-2x"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Search</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                placeholder="Search by ID, name, email, or mobile..."
+                [(ngModel)]="searchTerm"
+                (input)="applyFilters()">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">City</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                placeholder="Filter by city..."
+                [(ngModel)]="cityFilter"
+                (input)="applyFilters()">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">State</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                placeholder="Filter by state..."
+                [(ngModel)]="stateFilter"
+                (input)="applyFilters()">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading customers...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="alert alert-danger">
+    <i class="fas fa-exclamation-triangle me-2"></i>{{ error }}
+  </div>
+
+  <!-- Customers Table -->
+  <div *ngIf="!loading && !error" class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fas fa-list me-2"></i>Customers ({{ filteredCustomers.length }})
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Consumer ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Mobile</th>
+                  <th>Address</th>
+                  <th>City</th>
+                  <th>State</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let customer of filteredCustomers">
+                  <td>
+                    <span class="badge bg-info">{{ customer.consumerId }}</span>
+                  </td>
+                  <td>{{ customer.name }}</td>
+                  <td>{{ customer.email }}</td>
+                  <td>{{ customer.mobile }}</td>
+                  <td>{{ customer.address }}</td>
+                  <td>{{ customer.city || '-' }}</td>
+                  <td>{{ customer.state || '-' }}</td>
+                  <td>
+                    <span [class]="getStatusBadgeClass(customer.user?.status || 'UNKNOWN')">
+                      {{ customer.user?.status || 'UNKNOWN' }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="btn-group" role="group">
+                      <button class="btn btn-sm btn-outline-primary" (click)="viewCustomerDetails(customer)">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-warning" (click)="editCustomer(customer)">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-danger" (click)="deleteCustomer(customer)">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div *ngIf="filteredCustomers.length === 0" class="text-center py-4">
+            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">No customers found</h5>
+            <p class="text-muted">Try adjusting your search criteria</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Customer Modal -->
+<div class="modal fade" [class.show]="editing" [style.display]="editing ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-edit me-2"></i>Edit Customer
+        </h5>
+        <button type="button" class="btn-close" (click)="closeEditModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="editForm" (ngSubmit)="saveCustomer()">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Name *</label>
+              <input type="text" class="form-control" formControlName="name">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email *</label>
+              <input type="email" class="form-control" formControlName="email">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Mobile *</label>
+              <input type="tel" class="form-control" formControlName="mobile">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Pincode</label>
+              <input type="text" class="form-control" formControlName="pincode">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Address *</label>
+              <textarea class="form-control" rows="3" formControlName="address"></textarea>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">City</label>
+              <input type="text" class="form-control" formControlName="city">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">State</label>
+              <input type="text" class="form-control" formControlName="state">
+            </div>
+          </div>
+          
+          <div *ngIf="editError" class="alert alert-danger mt-3">
+            <i class="fas fa-exclamation-triangle me-2"></i>{{ editError }}
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="saveCustomer()" [disabled]="editForm.invalid">
+          <i class="fas fa-save me-1"></i>Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Customer Details Modal -->
+<div class="modal fade" [class.show]="selectedCustomer && !editing" [style.display]="selectedCustomer && !editing ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-user me-2"></i>Customer Details
+        </h5>
+        <button type="button" class="btn-close" (click)="closeDetailsModal()"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedCustomer">
+        <div class="row">
+          <div class="col-md-6">
+            <h6>Basic Information</h6>
+            <table class="table table-borderless">
+              <tr>
+                <td><strong>Consumer ID:</strong></td>
+                <td><span class="badge bg-info">{{ selectedCustomer.consumerId }}</span></td>
+              </tr>
+              <tr>
+                <td><strong>Name:</strong></td>
+                <td>{{ selectedCustomer.name }}</td>
+              </tr>
+              <tr>
+                <td><strong>Email:</strong></td>
+                <td>{{ selectedCustomer.email }}</td>
+              </tr>
+              <tr>
+                <td><strong>Mobile:</strong></td>
+                <td>{{ selectedCustomer.mobile }}</td>
+              </tr>
+            </table>
+          </div>
+          <div class="col-md-6">
+            <h6>Address Information</h6>
+            <table class="table table-borderless">
+              <tr>
+                <td><strong>Address:</strong></td>
+                <td>{{ selectedCustomer.address }}</td>
+              </tr>
+              <tr>
+                <td><strong>City:</strong></td>
+                <td>{{ selectedCustomer.city || '-' }}</td>
+              </tr>
+              <tr>
+                <td><strong>State:</strong></td>
+                <td>{{ selectedCustomer.state || '-' }}</td>
+              </tr>
+              <tr>
+                <td><strong>Pincode:</strong></td>
+                <td>{{ selectedCustomer.pincode || '-' }}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeDetailsModal()">Close</button>
+        <button type="button" class="btn btn-warning" (click)="editCustomer(selectedCustomer!)">
+          <i class="fas fa-edit me-1"></i>Edit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" [class.show]="confirmDeleteCustomer" [style.display]="confirmDeleteCustomer ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger">
+          <i class="fas fa-exclamation-triangle me-2"></i>Confirm Delete
+        </h5>
+        <button type="button" class="btn-close" (click)="cancelDelete()"></button>
+      </div>
+      <div class="modal-body" *ngIf="confirmDeleteCustomer">
+        <p>Are you sure you want to delete customer <strong>{{ confirmDeleteCustomer.name }}</strong>?</p>
+        <p class="text-muted">This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="confirmDelete()">
+          <i class="fas fa-trash me-1"></i>Delete Customer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop -->
+<div class="modal-backdrop fade show" *ngIf="editing || (selectedCustomer && !editing) || confirmDeleteCustomer"></div>

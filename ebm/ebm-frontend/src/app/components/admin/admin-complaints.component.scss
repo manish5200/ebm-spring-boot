@@ -1,30 +1,143 @@
-.container {
-  max-width: 900px;
+/* =================================================================
+   ADMIN COMPLAINTS STYLING
+   ================================================================= */
+
+/* --- Main Background --- */
+.admin-complaints-bg {
+  background-color: #f4f7fc;
+  min-height: 100vh;
 }
+
+/* --- Card Enhancements --- */
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 35px rgba(0, 0, 0, 0.08);
+}
+
+/* =================================================================
+   TABLE STYLING (FIX FOR FLUCTUATION & CLIPPING)
+   ================================================================= */
+.table-responsive {
+  border-radius: 8px;
+  /* CORRECTED: Use overflow-x: auto to allow vertical overflow */
+  overflow-x: auto; 
+}
+
 .table {
-  background: #fff;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  /* This is the key to preventing column widths from changing */
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: separate; /* Required for border-spacing */
+  border-spacing: 0;
+  
+  thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    padding: 1rem;
+    vertical-align: middle;
+  }
+
+  tbody td {
+    padding: 1rem;
+    vertical-align: middle; /* Aligns content vertically for a cleaner look */
+    /* Prevents long text from breaking the layout */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Assigning specific widths to prevent resizing */
+  th:nth-child(1), td:nth-child(1) { width: 8%; } /* ID */
+  th:nth-child(2), td:nth-child(2) { width: 15%; } /* Customer */
+  th:nth-child(3), td:nth-child(3) { width: 12%; } /* Type */
+  th:nth-child(4), td:nth-child(4) { width: 12%; } /* Category */
+  th:nth-child(5), td:nth-child(5) { width: 20%; white-space: normal; } /* Problem (allow wrapping) */
+  th:nth-child(6), td:nth-child(6) { width: 13%; } /* Created */
+  th:nth-child(7), td:nth-child(7) { width: 12%; } /* Status */
+  th:nth-child(8), td:nth-child(8) { width: 8%; text-align: center; } /* Actions */
+
+  /* CORRECTED: This rule allows the dropdown in the Actions column to be visible */
+  tbody td:last-child {
+    overflow: visible;
+  }
+
+  tbody tr {
+    transition: background-color 0.2s ease;
+  }
+
+  tbody tr:hover {
+    background-color: #f1f3f5;
+  }
 }
 
-th, td {
-  vertical-align: middle !important;
+/* --- Dropdown Menu Styling --- */
+.dropdown {
+  position: relative; /* This is crucial for the dropdown menu positioning */
 }
 
-.btn {
-  min-width: 80px;
+.dropdown-menu {
+  border: 1px solid #e9ecef;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 8px 0;
+  min-width: 180px;
+  /* Ensure dropdown appears above other table content */
+  z-index: 100; 
 }
 
+.dropdown-item {
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin: 2px 8px;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #e9ecef;
+  transform: translateX(2px);
+}
+
+.dropdown-item i {
+  width: 20px;
+  text-align: center;
+}
+
+.dropdown-divider {
+  margin: 8px 0;
+  border-color: #e9ecef;
+}
+
+/* --- Status Badge Styling --- */
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+/* --- Modal Styling --- */
 .modal-content {
-  border-radius: 0.75rem;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
 }
 
-@media (max-width: 768px) {
-  .table {
-    font-size: 0.95rem;
-  }
-  th, td {
-    padding: 0.5rem;
-  }
+.modal-header {
+  border-bottom: 1px solid #e9ecef;
+  padding: 1.5rem;
+}
+
+.modal-backdrop.show {
+  opacity: 0.5;
 }

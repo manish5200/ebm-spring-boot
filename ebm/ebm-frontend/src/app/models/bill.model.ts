@@ -1,26 +1,18 @@
 export interface Bill {
-  id?: number;
   billId: string;
-  customerId: string;
-  customerName?: string;
-  customerEmail?: string;
-  customerPhone?: string;
-  description: string;
-  dueDate: Date;
-  issueDate: Date;
-  amountDue: number;
+  consumerId: string;
   billingMonth: string;
-  paidAmount?: number;
+  amountDue: number;
+  issueDate: Date;
+  dueDate: Date;
   status: BillStatus;
+  paymentId?: string;
   paymentDate?: Date;
-  paymentMethod?: PaymentMethod;
 }
 
 export enum BillStatus {
   PENDING = 'PENDING',
-  PAID = 'PAID',
-  OVERDUE = 'OVERDUE',
-  PARTIAL = 'PARTIAL'
+  PAID = 'PAID'
 }
 
 export enum PaymentMethod {
@@ -28,26 +20,39 @@ export enum PaymentMethod {
   DEBIT_CARD = 'DEBIT_CARD',
   NET_BANKING = 'NET_BANKING',
   UPI = 'UPI',
-  CASH = 'CASH',
-  CHEQUE = 'CHEQUE'
+  ONLINE = 'ONLINE'
 }
 
 export interface PaymentRequest {
   billId: string;
   amount: number;
-  paymentMethod: PaymentMethod;
-  cardNumber?: string;
-  cardHolderName?: string;
-  expiryDate?: string;
-  cvv?: string;
-  upiId?: string;
+  paymentMethod: string;
 }
 
 export interface PaymentResponse {
-  transactionId: string;
-  status: 'SUCCESS' | 'FAILED' | 'PENDING';
   message: string;
-  amount: number;
+  transactionId: string;
+  billId: string;
+  amountPaid: number;
   paymentDate: Date;
-  paymentMethod: PaymentMethod; // FIXED: Added paymentMethod property
+}
+
+export interface BillResponse {
+  billId: string;
+  consumerId: string;
+  billingMonth: string;
+  amountDue: number;
+  issueDate: Date;
+  dueDate: Date;
+  status: BillStatus;
+  paymentId?: string;
+  paymentDate?: Date;
+}
+
+export interface CreateBillRequest {
+  consumerId: string;
+  billingMonth: string;
+  amountDue: number;
+  issueDate?: Date;
+  dueDate?: Date;
 }

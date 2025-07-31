@@ -1,7 +1,8 @@
+
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { ToastrService } from 'ngx-toastr';
@@ -14,64 +15,32 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
-  name: string = '';
-  email: string = '';
-  mobile: string = '';
-  address: string = '';
-  city: string = '';
-  state: string = '';
-  pincode: string = '';
-  password: string = '';
-  confirmPassword: string = '';
-  consumerId: string = '';
-  department: string = '';
-
-  role: 'CUSTOMER' | 'ADMIN' = 'CUSTOMER'; // Assuming a role selection
-  registerForm!: FormGroup;
-  loading = false;
-  error = '';
-  success = '';
-  selectedRole: 'CUSTOMER' | 'ADMIN' = 'CUSTOMER';
+  registerForm: FormGroup;
+  userType = 'customer';
+  isLoading = false;
+  errorMessage = '';
+  showPassword = false;
+  showConfirmPassword = false;
 
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
-    private router: Router,
     private toastr: ToastrService
-  ) {}
-
-  ngOnInit(): void {
-    // Redirect if already logged in
-    if (this.authService.isLoggedIn && this.authService.isLoggedIn()) {
-      this.router.navigate(['/']);
-    }
-
-    this.initializeForm();
-  }
-
-  initializeForm(): void {
+  ) {
     this.registerForm = this.formBuilder.group({
-      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
+      username: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]],
-      firstName: ['', [Validators.required, Validators.minLength(2)]],
-      lastName: ['', [Validators.required, Validators.minLength(2)]],
-      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
-      
-      // Customer specific fields
-      consumerId: ['', this.selectedRole === 'CUSTOMER' ? [Validators.required] : []],
-      address: ['', this.selectedRole === 'CUSTOMER' ? [Validators.required] : []],
-      city: ['', this.selectedRole === 'CUSTOMER' ? [Validators.required] : []],
-      state: ['', this.selectedRole === 'CUSTOMER' ? [Validators.required] : []],
-      pincode: ['', this.selectedRole === 'CUSTOMER' ? [Validators.required, Validators.pattern(/^[0-9]{6}$/)] : []],
-      
-      // Admin specific fields
-      department: ['', this.selectedRole === 'ADMIN' ? [Validators.required] : []]
+      name: ['', [Validators.required]],
+      mobile: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+      address: ['', [Validators.required]],
+      city: ['', [Validators.required]],
+      state: ['', [Validators.required]],
+      pincode: ['', [Validators.required, Validators.pattern(/^[0-9]{6}$/)]],
+      consumerId: ['']
     }, { validators: this.passwordMatchValidator });
   }
-
-  get f() { return this.registerForm.controls; }
 
   passwordMatchValidator(form: FormGroup) {
     const password = form.get('password');
@@ -79,86 +48,64 @@ export class RegisterComponent {
     
     if (password && confirmPassword && password.value !== confirmPassword.value) {
       confirmPassword.setErrors({ passwordMismatch: true });
-    } else {
-      if (confirmPassword?.hasError('passwordMismatch')) {
-        confirmPassword.setErrors(null);
-      }
+      return { passwordMismatch: true };
     }
+    
     return null;
   }
 
-  onRoleChange(role: 'CUSTOMER' | 'ADMIN'): void {
-    this.selectedRole = role;
-    this.initializeForm();
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   onSubmit(): void {
     if (this.registerForm.invalid) {
-      Object.keys(this.registerForm.controls).forEach(key => {
-        this.registerForm.get(key)?.markAsTouched();
-      });
+      this.markFormGroupTouched();
       return;
     }
 
-    this.loading = true;
-    this.error = '';
-    this.success = '';
+    this.isLoading = true;
+    this.errorMessage = '';
 
     const formData = this.registerForm.value;
     
-    if (this.selectedRole === 'CUSTOMER') {
-      const customerData = {
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-        consumerId: formData.consumerId,
-        name: formData.firstName + ' ' + formData.lastName,
-        address: formData.address,
-        city: formData.city,
-        state: formData.state,
-        pincode: formData.pincode,
-        mobile: formData.phone
-      };
-
-      this.authService.registerCustomer(customerData).subscribe({
-        next: (response:any) => {
-          this.loading = false;
-          this.success = 'Customer registration successful! You can now login.';
-          this.toastr.success('Customer registration successful! You can now login.');
-          setTimeout(() => {
-            this.router.navigate(['/login']);
-          }, 2000);
+    if (this.userType === 'customer') {
+      this.authService.registerCustomer(formData).subscribe({
+        next: () => {
+          this.toastr.success('Registration successful! Please login.', 'Success');
+          this.isLoading = false;
+          this.registerForm.reset();
         },
-        error: (error:any) => {
-          this.loading = false;
-          this.error = 'Registration failed. Please try again.';
-          this.toastr.error('Registration failed. Please try again.');
-          console.error('Registration error:', error);
+        error: (error) => {
+          this.errorMessage = error.message || 'Registration failed';
+          this.toastr.error(this.errorMessage, 'Error');
+          this.isLoading = false;
         }
       });
     } else {
-      const adminData = {
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-        department: formData.department
-      };
-      this.authService.registerAdmin(adminData).subscribe({
-        next: (response:any) => {
-          this.loading = false;
-          this.success = 'Admin registration successful! You can now login.';
-          this.toastr.success('Admin registration successful! You can now login.');
-          setTimeout(() => {
-            this.router.navigate(['/login']);
-          }, 2000);
+      this.authService.registerAdmin(formData).subscribe({
+        next: () => {
+          this.toastr.success('Admin registration successful! Please login.', 'Success');
+          this.isLoading = false;
+          this.registerForm.reset();
         },
-        error: (error:any) => {
-          this.loading = false;
-          this.error = 'Registration failed. Please try again.';
-          this.toastr.error('Registration failed. Please try again.');
-          console.error('Registration error:', error);
+        error: (error) => {
+          this.errorMessage = error.message || 'Registration failed';
+          this.toastr.error(this.errorMessage, 'Error');
+          this.isLoading = false;
         }
       });
     }
+  }
+
+  private markFormGroupTouched(): void {
+    Object.keys(this.registerForm.controls).forEach(key => {
+      const control = this.registerForm.get(key);
+      control?.markAsTouched();
+    });
   }
 }

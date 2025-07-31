@@ -88,6 +88,19 @@ public class ComplaintController {
     }
 
     /**
+     * Update complaint status (PUT method for better compatibility)
+     */
+    @PutMapping("/{complaintId}/status")
+    public ResponseEntity<ComplaintResponse> updateComplaintStatus(
+            @PathVariable String complaintId,
+            @RequestBody UpdateComplaintStatusRequest req) {
+        // enforce pathVariable and body match
+        req.setComplaintId(complaintId);
+        ComplaintResponse resp = complaintService.updateStatus(req);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
+    }
+
+    /**
      * Edit a complaint (customer, only if status is OPEN)
      */
     @PutMapping("/{complaintId}")

@@ -11,8 +11,6 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -28,6 +26,10 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    /** User's full name */
+    @Column(nullable = true, length = 100)
+    private String name; 
+    
     /** Encrypted via EncryptionUtil */
     @Column(nullable = false)
     private String password;
@@ -40,21 +42,23 @@ public class User {
     @Column(nullable = false, length = 10)
     private String userType;
     
-    /** Department for admin users */
-    @Column(nullable = true, length = 50)
-    private String department;
-
-    
-    public String getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
-    }
+    //...
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Customer customer;
+    //...
     //Getters & Setters
     public Long getId() {
 		return id;
+	}
+
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
 
@@ -120,6 +124,15 @@ public class User {
 
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
+	}
+
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 

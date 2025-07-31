@@ -2,10 +2,14 @@ package myApp.ebm.controller;
 
 import myApp.ebm.dto.CustomerRegistrationRequest;
 import myApp.ebm.dto.MessageResponse;
+import myApp.ebm.model.Customer;
+import myApp.ebm.service.CustomerService;
 import myApp.ebm.service.RegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -13,15 +17,11 @@ public class CustomerController {
 
     @Autowired
     private RegistrationService registrationService;
-
     @Autowired
-    private myApp.ebm.service.CustomerService customerService;
+    private CustomerService customerService;
 
     /**
      * Registers a new customer.
-     *
-     * @param request contains consumerId, username, name, email, mobile, address, password
-     * @return 201 Created on success, 409 Conflict if email already exists
      */
     @PostMapping("/register")
     public ResponseEntity<MessageResponse> registerCustomer(
@@ -33,28 +33,45 @@ public class CustomerController {
                 .body(new MessageResponse("Customer registered successfully"));
     }
 
+    /**
+     * Update customer profile
+     */
     @PutMapping("/profile/{userId}")
-    public ResponseEntity<MessageResponse> updateCustomerProfile(
+    public ResponseEntity<Customer> updateCustomerProfile(
             @PathVariable Long userId,
-            @RequestBody CustomerRegistrationRequest request) {
-        customerService.updateCustomerProfile(
-            userId,
-            request.getName(),
-            request.getAddress(),
-            request.getCity(),
-            request.getState(),
-            request.getPincode(),
-            request.getMobile()
-        );
-        return ResponseEntity.ok(new MessageResponse("Profile updated successfully"));
+            @RequestBody Customer customerData) {
+        
+        Customer updatedCustomer = customerService.updateCustomerProfile(userId, customerData);
+        return ResponseEntity.ok(updatedCustomer);
     }
 
     /**
-     * Delete a customer (admin only)
+     * Get customer by ID
+     */
+    @GetMapping("/{consumerId}")
+    public ResponseEntity<Customer> getCustomerById(@PathVariable String consumerId) {
+        Customer customer = customerService.getCustomerByConsumerId(consumerId);
+        return ResponseEntity.ok(customer);
+    }
+
+    /**
+     * Update customer by consumerId
+     */
+    @PutMapping("/{consumerId}")
+    public ResponseEntity<Customer> updateCustomer(
+            @PathVariable String consumerId,
+            @RequestBody Customer customerData) {
+        
+        Customer updatedCustomer = customerService.updateCustomer(consumerId, customerData);
+        return ResponseEntity.ok(updatedCustomer);
+    }
+
+    /**
+     * Delete customer by consumerId
      */
     @DeleteMapping("/{consumerId}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable String consumerId) {
-        customerService.deleteCustomerByConsumerId(consumerId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        customerService.deleteCustomer(consumerId);
+        return ResponseEntity.noContent().build();
     }
 }

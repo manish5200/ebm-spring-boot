@@ -2,84 +2,65 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Complaint, ComplaintRequest, ComplaintResponse } from '../models/complaint.model';
-import { AuthService } from './auth.service';
-import { environment } from '../../environments/environment';
-
-
+import { Complaint, ComplaintRequest, ComplaintResponse, UpdateComplaintStatusRequest } from '../models/complaint.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ComplaintService {
-  private apiUrl = environment.apiUrl + '/complaints'; // Update with your API URL
+  private apiUrl = 'http://localhost:8080/api/complaints';
 
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService
-  ) {}
+  constructor(private http: HttpClient) {}
 
   // Customer methods
-  getCustomerComplaints(customerId: number): Observable<Complaint[]> {
-    const headers = this.authService.getAuthHeaders();
-    return this.http.get<Complaint[]>(`${this.apiUrl}/customer/${customerId}`, { headers })
+  getCustomerComplaints(consumerId: string): Observable<Complaint[]> {
+    return this.http.get<Complaint[]>(`${this.apiUrl}/customer/${consumerId}`)
       .pipe(catchError(this.handleError));
   }
 
-  createComplaint(complaint: ComplaintRequest): Observable<Complaint> {
-    const headers = this.authService.getAuthHeaders();
-    return this.http.post<Complaint>(`${this.apiUrl}`, complaint, { headers })
+  getOpenComplaints(consumerId: string): Observable<Complaint[]> {
+    return this.http.get<Complaint[]>(`${this.apiUrl}/customer/${consumerId}/open`)
       .pipe(catchError(this.handleError));
   }
 
-  updateComplaint(id: number, complaint: ComplaintRequest): Observable<Complaint> {
-    const headers = this.authService.getAuthHeaders();
-    return this.http.put<Complaint>(`${this.apiUrl}/${id}`, complaint, { headers })
+  createComplaint(complaint: ComplaintRequest): Observable<ComplaintResponse> {
+    return this.http.post<ComplaintResponse>(`${this.apiUrl}`, complaint)
       .pipe(catchError(this.handleError));
   }
 
- deleteComplaint(id: number | string): Observable<void> {
-  const headers = this.authService.getAuthHeaders();
-  return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers })
-    .pipe(catchError(this.handleError));
-}
-
-  getComplaintById(id: number): Observable<Complaint> {
-    const headers = this.authService.getAuthHeaders();
-    return this.http.get<Complaint>(`${this.apiUrl}/${id}`, { headers })
+  updateComplaint(complaintId: string, complaint: ComplaintRequest): Observable<ComplaintResponse> {
+    return this.http.put<ComplaintResponse>(`${this.apiUrl}/${complaintId}`, complaint)
       .pipe(catchError(this.handleError));
   }
 
-  editComplaint(complaintId: string, complaint: any) {
-    return this.http.put(`${this.apiUrl}/${complaintId}`, complaint, { headers: this.authService.getAuthHeaders() });
+  deleteComplaint(complaintId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${complaintId}`)
+      .pipe(catchError(this.handleError));
   }
 
-  fileComplaint(complaint: any) {
-    return this.http.post(`${this.apiUrl}`, complaint, { headers: this.authService.getAuthHeaders() });
+  getComplaintById(complaintId: string): Observable<Complaint> {
+    return this.http.get<Complaint>(`${this.apiUrl}/${complaintId}`)
+      .pipe(catchError(this.handleError));
   }
 
   // Admin methods
   getAllComplaints(): Observable<Complaint[]> {
-    const headers = this.authService.getAuthHeaders();
-    return this.http.get<Complaint[]>(`${this.apiUrl}`, { headers })
+    return this.http.get<Complaint[]>(`${this.apiUrl}`)
       .pipe(catchError(this.handleError));
   }
 
   getComplaintsByStatus(status: string): Observable<Complaint[]> {
-    const headers = this.authService.getAuthHeaders();
-    return this.http.get<Complaint[]>(`${this.apiUrl}/status/${status}`, { headers })
+    return this.http.get<Complaint[]>(`${this.apiUrl}/status/${status}`)
       .pipe(catchError(this.handleError));
   }
 
-  updateComplaintStatus(id: string, response: ComplaintResponse): Observable<Complaint> {
-    const headers = this.authService.getAuthHeaders();
-    return this.http.put<Complaint>(`${this.apiUrl}/${id}/status`, response, { headers })
+  updateComplaintStatus(complaintId: string, updateRequest: UpdateComplaintStatusRequest): Observable<ComplaintResponse> {
+    return this.http.put<ComplaintResponse>(`${this.apiUrl}/${complaintId}/status`, updateRequest)
       .pipe(catchError(this.handleError));
   }
 
   getComplaintStats(): Observable<any> {
-    const headers = this.authService.getAuthHeaders();
-    return this.http.get<any>(`${this.apiUrl}/stats`, { headers })
+    return this.http.get<any>(`${this.apiUrl}/stats`)
       .pipe(catchError(this.handleError));
   }
 
@@ -90,9 +71,8 @@ export class ComplaintService {
       errorMessage = error.error.message;
     } else {
       // Server-side error
-      errorMessage = error.error?.message || error.message || 'Server error';
+      errorMessage = error.status ? `${error.status}: ${error.message}` : 'Server error';
     }
-    console.error('Complaint Service Error:', error);
     return throwError(() => new Error(errorMessage));
   }
 }

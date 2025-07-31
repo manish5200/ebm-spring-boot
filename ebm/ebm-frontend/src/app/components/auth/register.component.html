@@ -1,50 +1,201 @@
-<div class="auth-bg py-5">
-  <div class="container d-flex justify-content-center align-items-center min-vh-100">
-    <div class="card glass-card p-4 shadow-lg" style="max-width: 500px; width: 100%;">
-      <div class="text-center mb-4">
-        <img src="/assets/ebm-hero.svg" alt="EBM Logo" style="width: 80px;" class="mb-2" />
-        <h2 class="mb-0 text-ebm-primary">Sign Up</h2>
-        <p class="text-muted">Create your EBM account</p>
-      </div>
-       <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
-        <div class="mb-3">
-          <label class="form-label">Full Name</label>
-          <input type="text" class="form-control" [(ngModel)]="name" name="name" required />
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-lg border-0 glass-card">
+        <div class="card-body p-4">
+          <h3 class="mb-4 text-center text-ebm-primary">
+            <i class="fas fa-user-plus me-2"></i>Create Account
+          </h3>
+          
+          <!-- User Type Selection -->
+          <div class="mb-4">
+            <label class="form-label fw-bold">Register as:</label>
+            <div class="d-flex gap-3">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="userType" id="customer" value="customer" [(ngModel)]="userType" checked>
+                <label class="form-check-label" for="customer">
+                  <i class="fas fa-user me-2"></i>Customer
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="userType" id="admin" value="admin" [(ngModel)]="userType">
+                <label class="form-check-label" for="admin">
+                  <i class="fas fa-user-shield me-2"></i>Admin
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <!-- Basic Information -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="username" class="form-label">Username</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-user"></i></span>
+                  <input type="text" id="username" formControlName="username" class="form-control" placeholder="Enter username" [ngClass]="{'is-invalid': registerForm.get('username')?.invalid && registerForm.get('username')?.touched}">
+                  <div class="invalid-feedback" *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched">
+                    Username is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="email" class="form-label">Email</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                  <input type="email" id="email" formControlName="email" class="form-control" placeholder="Enter email" [ngClass]="{'is-invalid': registerForm.get('email')?.invalid && registerForm.get('email')?.touched}">
+                  <div class="invalid-feedback" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+                    Please enter a valid email.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="name" class="form-label">Full Name</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                  <input type="text" id="name" formControlName="name" class="form-control" placeholder="Enter full name" [ngClass]="{'is-invalid': registerForm.get('name')?.invalid && registerForm.get('name')?.touched}">
+                  <div class="invalid-feedback" *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
+                    Full name is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="mobile" class="form-label">Mobile Number</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                  <input type="tel" id="mobile" formControlName="mobile" class="form-control" placeholder="Enter mobile number" [ngClass]="{'is-invalid': registerForm.get('mobile')?.invalid && registerForm.get('mobile')?.touched}">
+                  <div class="invalid-feedback" *ngIf="registerForm.get('mobile')?.invalid && registerForm.get('mobile')?.touched">
+                    Mobile number is required.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Address Information -->
+            <div class="mb-3">
+              <label for="address" class="form-label">Address</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                <textarea id="address" formControlName="address" class="form-control" rows="2" placeholder="Enter your address" [ngClass]="{'is-invalid': registerForm.get('address')?.invalid && registerForm.get('address')?.touched}"></textarea>
+                <div class="invalid-feedback" *ngIf="registerForm.get('address')?.invalid && registerForm.get('address')?.touched">
+                  Address is required.
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <label for="city" class="form-label">City</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-city"></i></span>
+                  <input type="text" id="city" formControlName="city" class="form-control" placeholder="Enter city" [ngClass]="{'is-invalid': registerForm.get('city')?.invalid && registerForm.get('city')?.touched}">
+                  <div class="invalid-feedback" *ngIf="registerForm.get('city')?.invalid && registerForm.get('city')?.touched">
+                    City is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="state" class="form-label">State</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-map"></i></span>
+                  <input type="text" id="state" formControlName="state" class="form-control" placeholder="Enter state" [ngClass]="{'is-invalid': registerForm.get('state')?.invalid && registerForm.get('state')?.touched}">
+                  <div class="invalid-feedback" *ngIf="registerForm.get('state')?.invalid && registerForm.get('state')?.touched">
+                    State is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="pincode" class="form-label">Pincode</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-mail-bulk"></i></span>
+                  <input type="text" id="pincode" formControlName="pincode" class="form-control" placeholder="Enter pincode" [ngClass]="{'is-invalid': registerForm.get('pincode')?.invalid && registerForm.get('pincode')?.touched}">
+                  <div class="invalid-feedback" *ngIf="registerForm.get('pincode')?.invalid && registerForm.get('pincode')?.touched">
+                    Pincode is required.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Customer Specific Fields -->
+            <div *ngIf="userType === 'customer'" class="mb-3">
+              <label for="consumerId" class="form-label">Consumer ID</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                <input type="text" id="consumerId" formControlName="consumerId" class="form-control" placeholder="Enter consumer ID" [ngClass]="{'is-invalid': registerForm.get('consumerId')?.invalid && registerForm.get('consumerId')?.touched}">
+                <div class="invalid-feedback" *ngIf="registerForm.get('consumerId')?.invalid && registerForm.get('consumerId')?.touched">
+                  Consumer ID is required for customers.
+                </div>
+              </div>
+            </div>
+
+
+
+            <!-- Password Fields -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="password" class="form-label">Password</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                  <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password" class="form-control" placeholder="Enter password" [ngClass]="{'is-invalid': registerForm.get('password')?.invalid && registerForm.get('password')?.touched}">
+                  <button type="button" class="btn btn-outline-secondary" (click)="togglePasswordVisibility()" tabindex="-1">
+                    <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                  </button>
+                  <div class="invalid-feedback" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+                    Password must be at least 6 characters.
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                  <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPassword" formControlName="confirmPassword" class="form-control" placeholder="Confirm password" [ngClass]="{'is-invalid': registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched}">
+                  <button type="button" class="btn btn-outline-secondary" (click)="toggleConfirmPasswordVisibility()" tabindex="-1">
+                    <i class="fas" [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                  </button>
+                  <div class="invalid-feedback" *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
+                    Passwords do not match.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Terms and Conditions -->
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="terms" formControlName="terms" [ngClass]="{'is-invalid': registerForm.get('terms')?.invalid && registerForm.get('terms')?.touched}">
+              <label class="form-check-label" for="terms">
+                I agree to the <a href="#" class="text-ebm-primary">Terms and Conditions</a>
+              </label>
+              <div class="invalid-feedback" *ngIf="registerForm.get('terms')?.invalid && registerForm.get('terms')?.touched">
+                You must agree to the terms and conditions.
+              </div>
+            </div>
+
+            <!-- Error Messages -->
+            <div *ngIf="errorMessage" class="alert alert-danger py-2">
+              <i class="fas fa-exclamation-circle me-2"></i>{{ errorMessage }}
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid mb-3">
+              <button type="submit" class="btn btn-primary btn-lg" [disabled]="isLoading || registerForm.invalid">
+                <i class="fas fa-user-plus me-2"></i>
+                {{ isLoading ? 'Creating Account...' : 'Create Account' }}
+              </button>
+            </div>
+
+            <!-- Login Link -->
+            <div class="text-center">
+              <a routerLink="/auth/login" class="text-ebm-primary">
+                <i class="fas fa-sign-in-alt me-1"></i>Already have an account? Login
+              </a>
+            </div>
+          </form>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Email</label>
-          <input type="email" class="form-control" [(ngModel)]="email" name="email" required />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Mobile</label>
-          <input type="text" class="form-control" [(ngModel)]="mobile" name="mobile" required />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Address</label>
-          <input type="text" class="form-control" [(ngModel)]="address" name="address" required />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">City</label>
-          <input type="text" class="form-control" [(ngModel)]="city" name="city" required />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">State</label>
-          <input type="text" class="form-control" [(ngModel)]="state" name="state" required />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Pincode</label>
-          <input type="text" class="form-control" [(ngModel)]="pincode" name="pincode" required />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Password</label>
-          <input type="password" class="form-control" [(ngModel)]="password" name="password" required />
-        </div>
-        <button class="btn btn-gradient-primary w-100" [disabled]="loading">Register</button>
-      </form>
-      <div *ngIf="error" class="alert alert-danger mt-3">{{ error }}</div>
-      <div class="text-center mt-3">
-        <span>Already have an account?</span>
-        <a routerLink="/auth/login" class="text-ebm-primary">Sign In</a>
       </div>
     </div>
   </div>

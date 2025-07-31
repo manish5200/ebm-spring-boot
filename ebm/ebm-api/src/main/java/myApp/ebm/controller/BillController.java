@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Bill Controller", description = "APIs for bill operations")
 @RestController
@@ -25,6 +26,14 @@ public class BillController {
     	    		  .status(HttpStatus.CREATED).body(resp);
     }
     
+    /**
+     * View all bills (admin only).
+     */
+    @GetMapping
+    public ResponseEntity<List<BillResponse>> getAllBills() {
+        List<BillResponse> bills = billService.getAllBills();
+        return ResponseEntity.ok(bills);
+    }
 
     /**
      * View all bills for a customer.
@@ -70,20 +79,7 @@ public class BillController {
         PaymentResponse resp = billService.payBill(req);
         return ResponseEntity.ok(resp);
     }
-    
-    /**
-     * Pay a bill by billId (simplified for customer dashboard)
-     */
-    @PostMapping("/{billId}/pay")
-    public ResponseEntity<PaymentResponse> payBillById(@PathVariable String billId) {
-        PaymentRequest req = new PaymentRequest();
-        req.setBillId(billId);
-        // Set a default amount that covers the full bill
-        req.setAmountPaid(new java.math.BigDecimal("999999"));
-        
-        PaymentResponse resp = billService.payBill(req);
-        return ResponseEntity.ok(resp);
-    }
+
     /**
      * Delete a bill (admin only)
      */
@@ -91,5 +87,61 @@ public class BillController {
     public ResponseEntity<Void> deleteBill(@PathVariable String billId) {
         billService.deleteBillByBillId(billId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    /**
+     * Get bill by ID
+     */
+    @GetMapping("/{billId}")
+    public ResponseEntity<BillResponse> getBillById(@PathVariable String billId) {
+        BillResponse bill = billService.getBillById(billId);
+        return ResponseEntity.ok(bill);
+    }
+
+    /**
+     * Update a bill (admin only)
+     */
+    @PutMapping("/{billId}")
+    public ResponseEntity<BillResponse> updateBill(
+            @PathVariable String billId,
+            @Valid @RequestBody CreateBillRequest req) {
+        BillResponse resp = billService.updateBill(billId, req);
+        return ResponseEntity.ok(resp);
+    }
+
+    /**
+     * Get bills by status
+     */
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<BillResponse>> getBillsByStatus(@PathVariable String status) {
+        List<BillResponse> bills = billService.getBillsByStatus(status);
+        return ResponseEntity.ok(bills);
+    }
+
+    /**
+     * Get bill statistics
+     */
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, Object>> getBillStats() {
+        Map<String, Object> stats = billService.getBillStats();
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Get payment history for all customers (admin)
+     */
+    @GetMapping("/payments")
+    public ResponseEntity<List<PaymentResponse>> getAllPaymentHistory() {
+        List<PaymentResponse> payments = billService.getAllPaymentHistory();
+        return ResponseEntity.ok(payments);
+    }
+
+    /**
+     * Get payment history for a specific customer
+     */
+    @GetMapping("/payments/customer/{consumerId}")
+    public ResponseEntity<List<PaymentResponse>> getCustomerPaymentHistory(@PathVariable String consumerId) {
+        List<PaymentResponse> payments = billService.getCustomerPaymentHistory(consumerId);
+        return ResponseEntity.ok(payments);
     }
 }

@@ -4,23 +4,17 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { User, LoginRequest, LoginResponse, RegisterRequest } from '../models/user.model';
 import { environment } from '../../environments/environment';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  // registerCustomer(customerData: { username: any; email: any; password: any; consumerId: any; name: string; address: any; city: any; state: any; pincode: any; mobile: any; }) {
-  //   throw new Error('Method not implemented.');
-  // }
-  // registerAdmin(adminData: { username: any; email: any; password: any; department: any; }) {
-  //   throw new Error('Method not implemented.');
-  // }
-  private apiUrl = environment.apiUrl + '/auth'; // Update with your API URL
+  private apiUrl = 'http://localhost:8080/api/auth'; // Update with your API URL
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
-  isLoggedIn: any;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     this.currentUserSubject = new BehaviorSubject<User | null>(
       JSON.parse(localStorage.getItem('currentUser') || 'null')
     );
@@ -35,10 +29,23 @@ export class AuthService {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials)
       .pipe(
         map(response => {
-          if (response && response.token) {
-            localStorage.setItem('currentUser', JSON.stringify(response.user));
-            localStorage.setItem('token', response.token);
-            this.currentUserSubject.next(response.user);
+          if (response && response.userId) {
+            // Build user object
+            const user: User = {
+              id: response.userId,
+              name: response.name,
+              username: response.username,
+              userType: response.userType as 'CUSTOMER' | 'ADMIN',
+              status: 'ACTIVE',
+              consumerId: response.consumerId // Add consumerId for customers
+            };
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            this.currentUserSubject.next(user);
+            
+            // Store token if it exists in response
+            if ((response as any).token) {
+              localStorage.setItem('token', (response as any).token);
+            }
           }
           return response;
         }),
@@ -46,62 +53,62 @@ export class AuthService {
       );
   }
 
-  register(userData: RegisterRequest): Observable<User> {
-    return this.http.post<User>(`${this.apiUrl}/register`, userData)
-      .pipe(catchError(this.handleError));
-  }
- /**
-   * Registers a new customer.
-   * @param customerData The data for the new customer.
-   * @returns An Observable of the registration response.
-   */
-  registerCustomer(customerData: any): Observable<any> { // Use 'any' or define a specific interface for customerData
-    // Assuming your backend has a specific endpoint for customer registration
-    return this.http.post<any>(`${this.apiUrl}/register/customer`, customerData)
+  register(userData: RegisterRequest): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/register`, userData)
       .pipe(catchError(this.handleError));
   }
 
-   /**
-   * Registers a new admin.
-   * @param adminData The data for the new admin.
-   * @returns An Observable of the registration response.
-   */
-  registerAdmin(adminData: any): Observable<any> { // Use 'any' or define a specific interface for adminData
-    // Assuming your backend has a specific endpoint for admin registration
-    return this.http.post<any>(`${this.apiUrl}/register/admin`, adminData)
+  registerCustomer(customerData: any): Observable<any> {
+    return this.http.post<any>(`http://localhost:8080/api/customers/register`, customerData)
       .pipe(catchError(this.handleError));
   }
 
-
+  registerAdmin(adminData: any): Observable<any> {
+    return this.http.post<any>(`http://localhost:8080/api/admins/register`, adminData)
+      .pipe(catchError(this.handleError));
+  }
 
   logout(): void {
     localStorage.removeItem('currentUser');
-    localStorage.removeItem('token');
     this.currentUserSubject.next(null);
+    this.router.navigate(['/home']);
+  }
+
+  isLoggedIn(): boolean {
+    return this.isAuthenticated();
   }
 
   isAuthenticated(): boolean {
-    const token = localStorage.getItem('token');
-    if (!token) return false;
-    
-    // Check if token is expired (basic check)
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const currentTime = Date.now() / 1000;
-      return payload.exp > currentTime;
-    } catch {
-      return false;
-    }
+    return !!this.currentUserValue;
+  }
+
+  getCurrentUser(): User | null {
+    return this.currentUserValue;
   }
 
   isAdmin(): boolean {
     const user = this.currentUserValue;
-    return user ? user.role === 'ADMIN' : false;
+    return user ? user.userType === 'ADMIN' : false;
   }
 
   isCustomer(): boolean {
     const user = this.currentUserValue;
-    return user ? user.role === 'CUSTOMER' : false;
+    return user ? user.userType === 'CUSTOMER' : false;
+  }
+
+  getAllUsers(): Observable<User[]> {
+    return this.http.get<User[]>(`http://localhost:8080/api/admins/customers`)
+      .pipe(catchError(this.handleError));
+  }
+
+  updateUserProfile(userId: number, userData: any): Observable<User> {
+    return this.http.put<User>(`http://localhost:8080/api/admins/${userId}`, userData)
+      .pipe(catchError(this.handleError));
+  }
+
+  updateCustomerProfile(userId: number, customerData: any): Observable<any> {
+    return this.http.put<any>(`http://localhost:8080/api/customers/profile/${userId}`, customerData)
+      .pipe(catchError(this.handleError));
   }
 
   getToken(): string | null {
@@ -116,30 +123,6 @@ export class AuthService {
     });
   }
 
-  updateAdminProfile(userId: string, updateData: any): Observable<User> {
-    const headers = this.getAuthHeaders();
-    return this.http.put<User>(`${this.apiUrl}/admin/${userId}`, updateData, { headers })
-      .pipe(catchError(this.handleError));
-  }
-
-  updateCustomerProfile(userId: string, updateData: any): Observable<User> {
-    const headers = this.getAuthHeaders();
-    return this.http.put<User>(`${this.apiUrl}/customer/${userId}`, updateData, { headers })
-      .pipe(catchError(this.handleError));
-  }
-
-  getAllUsers(): Observable<User[]> {
-    const headers = this.getAuthHeaders();
-    return this.http.get<User[]>(`${this.apiUrl}/users`, { headers })
-      .pipe(catchError(this.handleError));
-  }
-
-  deleteUser(userId: string): Observable<void> {
-    const headers = this.getAuthHeaders();
-    return this.http.delete<void>(`${this.apiUrl}/users/${userId}`, { headers })
-      .pipe(catchError(this.handleError));
-  }
-
   private handleError(error: any) {
     let errorMessage = 'An error occurred';
     if (error.error instanceof ErrorEvent) {
@@ -147,9 +130,8 @@ export class AuthService {
       errorMessage = error.error.message;
     } else {
       // Server-side error
-      errorMessage = error.error?.message || error.message || 'Server error';
+      errorMessage = error.status ? `${error.status}: ${error.message}` : 'Server error';
     }
-    console.error('Auth Service Error:', error);
     return throwError(() => new Error(errorMessage));
   }
 }

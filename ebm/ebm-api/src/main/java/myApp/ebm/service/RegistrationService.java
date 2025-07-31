@@ -51,6 +51,7 @@ public class RegistrationService {
             	    	
             	    	user.setUsername(req.getUsername());
             	    	user.setEmail(req.getEmail());
+            	    	user.setName(req.getName());
             	    	user.setPassword(EncryptionUtil.encrypt(req.getPassword()));
             	    	user.setStatus("ACTIVE");
             	    	user.setUserType("CUSTOMER");
@@ -103,16 +104,31 @@ public class RegistrationService {
             	    	User admin = new User();
             	    	admin.setUsername(req.getUsername());
             	    	admin.setEmail(req.getEmail());
+            	    	admin.setName(req.getName());
             	    	admin.setPassword(EncryptionUtil.encrypt(req.getPassword()));
             	    	admin.setStatus("ACTIVE");
             	    	admin.setUserType("ADMIN");
-            	    	admin.setDepartment(req.getDepartment());
             	    	//admin.setState(req.getState());
             	    	Role adminRole = roleRepo.findByName(ERole.ROLE_ADMIN).orElseThrow(()->
             	    	   new RegistrationException("ROLE_ADMIN not configured",null));
             	    	
             	    	admin.setRoles(Collections.singleton(adminRole));
-            	    	userRepo.save(admin);
+            	    	// 3. Save admin details in Customer table
+            	    	Customer adminCustomer = new Customer();
+            	    	adminCustomer.setConsumerId("ADM" + System.currentTimeMillis()%10000000000L); // Use username as admin ID
+            	    	adminCustomer.setName(req.getName());
+            	    	adminCustomer.setEmail(req.getEmail());
+            	    	adminCustomer.setMobile("7880589908"); // Default values for admin
+            	    	adminCustomer.setAddress("Admin Office, New Town");
+            	    	adminCustomer.setCity("Kolkata");
+            	    	adminCustomer.setState("West Bengal");
+            	    	adminCustomer.setPincode("700156");
+            	    	
+            	    	adminCustomer.setUser(admin);
+            	    	
+            	    	// 4. Save both
+            	    	customerRepo.save(adminCustomer);
+            	    	
             	    }catch(EmailAlreadyExistsException e) {
             	    	throw e;
             	    }catch(Exception e) {

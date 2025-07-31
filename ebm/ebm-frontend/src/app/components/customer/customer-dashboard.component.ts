@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -6,10 +7,9 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { BillService } from '../../services/bill.service';
 import { ComplaintService } from '../../services/complaint.service';
-// Update the import to match the actual exported member from bill.model.ts
-import { Bill } from '../../models/bill.model';
-import { Complaint, ComplaintStatus } from '../../models/complaint.model';
-import { BillStatus } from '../../models/bill.model';
+import { Bill, BillResponse } from '../../models/bill.model';
+import { Complaint, ComplaintResponse } from '../../models/complaint.model';
+
 @Component({
   selector: 'app-customer-dashboard',
   standalone: true,
@@ -17,7 +17,7 @@ import { BillStatus } from '../../models/bill.model';
   templateUrl: './customer-dashboard.component.html',
   styleUrls: ['./customer-dashboard.component.scss']
 })
-export class CustomerDashboardComponent {
+export class CustomerDashboardComponent implements OnInit {
   currentUser: any;
   loading = true;
   
@@ -29,6 +29,7 @@ export class CustomerDashboardComponent {
     paidBills: 0
   };
 
+  // Recent data
   recentBills: Bill[] = [];
   recentComplaints: Complaint[] = [];
   paymentHistory: any[] = [];
@@ -46,8 +47,8 @@ export class CustomerDashboardComponent {
   ) {}
 
   ngOnInit(): void {
-    this.currentUser = this.authService.currentUser;
-
+    this.currentUser = this.authService.getCurrentUser();
+    
     if (!this.currentUser || !this.authService.isCustomer()) {
       this.router.navigate(['/login']);
       return;
@@ -63,21 +64,31 @@ export class CustomerDashboardComponent {
 
   loadDashboardData(): void {
     this.loading = true;
-    const customerId = this.currentUser.userId;
+    const customerId = this.currentUser.consumerId;
+
+    if (!customerId) {
+      this.loading = false;
+      return;
+    }
 
     // Load bills data
-    this.billService.getAllBills().subscribe({
+    this.billService.getCustomerBills(customerId).subscribe({
       next: (bills) => {
-        const pendingBills = bills.filter(bill => bill.status === BillStatus.PENDING || bill.status === BillStatus.PARTIAL);
-        const paidBills = bills.filter(bill => bill.status === BillStatus.PAID);
-
+        const pendingBills = bills.filter(bill => bill.status === 'PENDING');
+        const paidBills = bills.filter(bill => bill.status === 'PAID');
+        
         this.stats.pendingBills = pendingBills.length;
         this.stats.paidBills = paidBills.length;
         this.stats.totalDue = pendingBills.reduce((sum, bill) => sum + bill.amountDue, 0);
         
         // Get recent bills (last 5)
         this.recentBills = bills
-          .sort((a, b) => new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime())
+          .filter(bill => bill.issueDate)
+          .sort((a, b) => {
+            const dateA = a.issueDate ? new Date(a.issueDate).getTime() : 0;
+            const dateB = b.issueDate ? new Date(b.issueDate).getTime() : 0;
+            return dateB - dateA;
+          })
           .slice(0, 5);
       },
       error: (error) => {
@@ -86,30 +97,35 @@ export class CustomerDashboardComponent {
     });
 
     // Load complaints data
-// Load complaints data
-this.complaintService.getCustomerComplaints(customerId).subscribe({
-  next: (complaints) => {
-    this.stats.openComplaints = complaints.filter(c =>
-      c.status === ComplaintStatus.OPEN || c.status === ComplaintStatus.IN_PROGRESS
-    ).length;
-    
-    // Get recent complaints (last 5)
-    this.recentComplaints = complaints
-      .sort((a, b) => new Date(b.createdDate!).getTime() - new Date(a.createdDate!).getTime())
-      .slice(0, 5);
-    
-    this.loading = false;
-  },
-  error: (error) => {
-    console.error('Error loading complaints:', error);
-    this.loading = false;
-  }
-});
-
+    this.complaintService.getCustomerComplaints(customerId).subscribe({
+      next: (complaints) => {
+        this.stats.openComplaints = complaints.filter(c => 
+          c.status === 'OPEN' || c.status === 'IN_PROGRESS'
+        ).length;
+        
+        // Get recent complaints (last 5)
+        this.recentComplaints = complaints
+          .filter(complaint => complaint.createdAt)
+          .sort((a, b) => {
+            const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return dateB - dateA;
+          })
+          .slice(0, 5);
+        
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading complaints:', error);
+        this.loading = false;
+      }
+    });
   }
 
   loadPaymentHistory() {
-    const customerId = this.currentUser.userId;
+    const customerId = this.currentUser.consumerId;
+    if (!customerId) return;
+    
     this.billService.getPaymentHistory(customerId).subscribe({
       next: (history) => {
         this.paymentHistory = history;
@@ -148,8 +164,9 @@ this.complaintService.getCustomerComplaints(customerId).subscribe({
     }).format(amount);
   }
 
-  formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('en-IN', {
+  formatDate(date: Date | string | undefined): string {
+    if (!date) return '';
+    return new Date(date).toLocaleDateString('en-IN', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'

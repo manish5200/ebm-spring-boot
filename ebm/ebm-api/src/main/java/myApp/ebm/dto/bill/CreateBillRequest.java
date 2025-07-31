@@ -21,6 +21,11 @@ public class CreateBillRequest {
     private BigDecimal amountDue;
 
     /**
+     * Bill issue date
+     */
+    private LocalDate issueDate;
+
+    /**
      * Optional: if omitted, service will default to 15 days after issue date.
      */
     private LocalDate dueDate;
@@ -34,6 +39,9 @@ public class CreateBillRequest {
 
     public BigDecimal getAmountDue() { return amountDue; }
     public void setAmountDue(BigDecimal amountDue) { this.amountDue = amountDue; }
+
+    public LocalDate getIssueDate() { return issueDate; }
+    public void setIssueDate(LocalDate issueDate) { this.issueDate = issueDate; }
 
     public LocalDate getDueDate() { return dueDate; }
     public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
