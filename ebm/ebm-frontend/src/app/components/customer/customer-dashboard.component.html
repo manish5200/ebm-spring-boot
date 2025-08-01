@@ -1,3 +1,4 @@
+
 <!-- Navigation Header -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-ebm-primary">
   <div class="container-fluid">
@@ -35,8 +36,8 @@
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="fas fa-user-circle me-1"></i>{{ currentUser?.username }}
           </a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#" (click)="startEditProfile(); $event.preventDefault()"><i class="fas fa-user me-2"></i>Profile</a></li>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
             <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="#" (click)="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
@@ -161,13 +162,13 @@
                 </a>
               </div>
               <div class="col-lg-3 col-md-6">
-                <a routerLink="/customer/bills" class="btn btn-outline-success w-100 py-3">
+                <a href="#" class="btn btn-outline-success w-100 py-3">
                   <i class="fas fa-credit-card d-block fs-2 mb-2"></i>
                   Pay Bill
                 </a>
               </div>
               <div class="col-lg-3 col-md-6">
-                <a routerLink="/customer/complaints/new" class="btn btn-outline-warning w-100 py-3">
+                <a routerLink="/customer/file-complaint" class="btn btn-outline-warning w-100 py-3">
                   <i class="fas fa-plus-circle d-block fs-2 mb-2"></i>
                   File Complaint
                 </a>
@@ -200,14 +201,15 @@
           <div class="card-body">
             <div *ngIf="recentBills.length === 0" class="text-center py-4">
               <i class="fas fa-inbox fs-1 text-muted mb-3"></i>
-              <p class="text-muted">No recent bills found</p>
+              <p class="text-muted">No bills found</p>
             </div>
             <div *ngFor="let bill of recentBills" class="d-flex justify-content-between align-items-center py-3 border-bottom">
               <div>
                 <h6 class="mb-1">{{ bill.billingMonth }}</h6>
-                <small class="text-muted d-block">
+                <small class="text-muted">
                   <i class="fas fa-hashtag me-1"></i>Bill ID: {{ bill.billId }}
                 </small>
+                <br>
                 <small class="text-muted">
                   <i class="fas fa-calendar me-1"></i>Due: {{ formatDate(bill.dueDate) }}
                 </small>
@@ -215,7 +217,7 @@
               <div class="text-end">
                 <h6 class="mb-1">{{ formatCurrency(bill.amountDue) }}</h6>
                 <span class="badge" [class]="getStatusBadgeClass(bill.status)">
-                  {{ bill.status }}
+                  <i class="fas fa-circle me-1"></i>{{ bill.status }}
                 </span>
               </div>
             </div>
@@ -237,21 +239,22 @@
           <div class="card-body">
             <div *ngIf="recentComplaints.length === 0" class="text-center py-4">
               <i class="fas fa-inbox fs-1 text-muted mb-3"></i>
-              <p class="text-muted">No recent complaints found</p>
+              <p class="text-muted">No complaints found</p>
             </div>
             <div *ngFor="let complaint of recentComplaints" class="d-flex justify-content-between align-items-center py-3 border-bottom">
               <div>
                 <h6 class="mb-1">{{ complaint.type }}</h6>
-                <small class="text-muted d-block">
+                <small class="text-muted">
                   <i class="fas fa-tag me-1"></i>{{ complaint.category }}
                 </small>
+                <br>
                 <small class="text-muted">
                   <i class="fas fa-calendar me-1"></i>{{ formatDate(complaint.createdAt) }}
                 </small>
               </div>
               <div class="text-end">
                 <span class="badge" [class]="getStatusBadgeClass(complaint.status)">
-                  {{ complaint.status }}
+                  <i class="fas fa-circle me-1"></i>{{ complaint.status }}
                 </span>
               </div>
             </div>
@@ -262,8 +265,8 @@
   </div>
 </div>
 
-<!-- CORRECTED: Profile Edit Modal with template reference variable -->
-<div class="modal fade" id="profileModal" tabindex="-1" #profileModal>
+<!-- Profile Edit Modal -->
+<div class="modal fade" id="profileModal" tabindex="-1" *ngIf="profileEditMode">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -273,31 +276,31 @@
         <button type="button" class="btn-close" (click)="cancelEditProfile()"></button>
       </div>
       <div class="modal-body">
-        <form #profileForm="ngForm">
+        <form>
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Name</label>
-              <input type="text" class="form-control" [(ngModel)]="profileFormData.username" name="username" required>
+              <input type="text" class="form-control" [(ngModel)]="profileFormData.name" name="name">
             </div>
             <div class="col-md-6">
               <label class="form-label">Mobile</label>
-              <input type="text" class="form-control" [(ngModel)]="profileFormData.mobile" name="mobile" required>
+              <input type="text" class="form-control" [(ngModel)]="profileFormData.mobile" name="mobile">
             </div>
             <div class="col-12">
               <label class="form-label">Address</label>
-              <textarea class="form-control" rows="2" [(ngModel)]="profileFormData.address" name="address" required></textarea>
+              <textarea class="form-control" rows="2" [(ngModel)]="profileFormData.address" name="address"></textarea>
             </div>
             <div class="col-md-4">
               <label class="form-label">City</label>
-              <input type="text" class="form-control" [(ngModel)]="profileFormData.city" name="city" required>
+              <input type="text" class="form-control" [(ngModel)]="profileFormData.city" name="city">
             </div>
             <div class="col-md-4">
               <label class="form-label">State</label>
-              <input type="text" class="form-control" [(ngModel)]="profileFormData.state" name="state" required>
+              <input type="text" class="form-control" [(ngModel)]="profileFormData.state" name="state">
             </div>
             <div class="col-md-4">
               <label class="form-label">Pincode</label>
-              <input type="text" class="form-control" [(ngModel)]="profileFormData.pincode" name="pincode" required>
+              <input type="text" class="form-control" [(ngModel)]="profileFormData.pincode" name="pincode">
             </div>
           </div>
         </form>
@@ -312,7 +315,7 @@
         <button type="button" class="btn btn-secondary" (click)="cancelEditProfile()">
           <i class="fas fa-times me-2"></i>Cancel
         </button>
-        <button type="button" class="btn btn-primary" (click)="saveProfile()" [disabled]="profileForm.invalid">
+        <button type="button" class="btn btn-primary" (click)="saveProfile()">
           <i class="fas fa-save me-2"></i>Save Changes
         </button>
       </div>

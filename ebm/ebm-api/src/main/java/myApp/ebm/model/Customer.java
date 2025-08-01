@@ -1,5 +1,7 @@
 package myApp.ebm.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -128,6 +130,7 @@ public class Customer {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false, 
                 foreignKey = @ForeignKey(name = "fk_customer_user"))
+    @JsonBackReference // This is the "child" side, it will be ignored
     private User user;
     
     public User getUser() {

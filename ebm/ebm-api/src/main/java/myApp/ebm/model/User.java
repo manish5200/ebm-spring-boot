@@ -6,6 +6,8 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 /**
  * Login credentials and role assignments.
  */
@@ -44,6 +46,7 @@ public class User {
     
     //...
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference // This is the "parent" side
     private Customer customer;
     //...
     //Getters & Setters

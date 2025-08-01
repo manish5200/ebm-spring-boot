@@ -26,12 +26,21 @@ export class CustomerBillsComponent implements OnInit {
   statusFilter = '';
   sortBy = 'dueDate';
   
+  // --- NEW --- State for inline payment forms
+  billForPayment: string | null = null; // Tracks which bill's payment form is open using its ID
+  paymentAmounts: { [billId: string]: number } = {}; // Holds the payment amount for each bill's form
+  processingPayments: { [billId: string]: boolean } = {}; // Tracks the processing state for each bill
+  
+  // Default payment method for the backend API call
+  paymentMethod = 'ONLINE';
+
+
   // Payment modal
   selectedBill: Bill | null = null;
   confirmPayment = false;
   processingPayment = false;
   paymentError = '';
-  paymentMethod = 'ONLINE';
+ // paymentMethod = 'ONLINE';
 
   constructor(
     private billService: BillService,
@@ -95,6 +104,61 @@ export class CustomerBillsComponent implements OnInit {
     });
   }
 
+  // --- NEW Action methods for inline payment ---
+
+  /**
+   * Toggles the visibility of the inline payment form for a specific bill.
+   */
+  togglePaymentForm(bill: Bill): void {
+    if (this.billForPayment === bill.billId) {
+      // If the form for this bill is already open, close it
+      this.billForPayment = null;
+    } else {
+      // Otherwise, open the form for this bill and pre-fill the amount
+      this.billForPayment = bill.billId;
+      this.paymentAmounts[bill.billId] = bill.amountDue;
+      this.processingPayments[bill.billId] = false;
+    }
+  }
+
+ /**
+   * Cancels the payment and closes the inline form.
+   */
+  cancelPayment(bill: Bill): void {
+      this.billForPayment = null;
+  }
+
+  /**
+   * Processes the payment for a single bill using the data from the inline form.
+   */
+  processRowPayment(bill: Bill): void {
+    const amountToPay = this.paymentAmounts[bill.billId];
+
+    if (!amountToPay || amountToPay <= 0) {
+      this.toastr.warning('Please enter a valid amount.', 'Invalid Amount');
+      return;
+    }
+
+    this.processingPayments[bill.billId] = true;
+
+    const paymentData = {
+      billId: bill.billId,
+      amountPaid: amountToPay,
+      paymentMethod: this.paymentMethod
+    };
+
+    this.billService.payBill(paymentData).subscribe({
+      next: () => {
+        this.toastr.success(`Payment of ${this.formatCurrency(amountToPay)} for bill ${bill.billId} was successful!`, 'Payment Successful');
+        this.billForPayment = null; // Close the form on success
+        this.fetchBills(); // Refresh the list of bills
+      },
+      error: (error) => {
+        this.toastr.error(error.message || 'Failed to process payment. Please try again.', 'Payment Failed');
+        this.processingPayments[bill.billId] = false; // Re-enable the button on failure
+      }
+    });
+  }
   // Stats methods
   getPendingBillsCount(): number {
     return this.bills.filter(b => b.status === 'PENDING').length;
@@ -205,7 +269,7 @@ export class CustomerBillsComponent implements OnInit {
 
     const paymentData = {
       billId: this.selectedBill.billId,
-      amount: this.selectedBill.amountDue,
+      amountPaid: this.selectedBill.amountDue,
       paymentMethod: this.paymentMethod
     };
 

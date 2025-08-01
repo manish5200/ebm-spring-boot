@@ -25,7 +25,7 @@ export enum PaymentMethod {
 
 export interface PaymentRequest {
   billId: string;
-  amount: number;
+  amountPaid: number;
   paymentMethod: string;
 }
 

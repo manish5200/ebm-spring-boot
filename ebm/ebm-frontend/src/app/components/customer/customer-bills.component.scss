@@ -1,40 +1,78 @@
+/* --- Main Background --- */
 .customer-bills-bg {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f0fdfa 0%, #e0e7ff 100%), url('/assets/customer-bg.svg') center/cover no-repeat;
+  background: linear-gradient(135deg, #f0fdfa 0%, #e0e7ff 100%);
+  // The background-image URL is kept as a comment if you want to use it locally.
+  // background-image: url('/assets/customer-bg.svg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   background-blend-mode: lighten;
 }
 
-.glass-card {
-  background: rgba(255,255,255,0.85);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+/* --- Card Styling --- */
+.card {
   border-radius: 1rem;
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.18);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
+}
+
+/* =================================================================
+   TABLE STYLING (FIX FOR CLIPPING & FLUCTUATION)
+   ================================================================= */
+
+/* This wrapper allows horizontal scrolling on small screens */
+.table-responsive {
+  border-radius: 0.5rem;
+  overflow-x: auto; /* Allow horizontal scroll, but not vertical clipping */
 }
 
 .table {
   background: #fff;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-th, td {
-  vertical-align: middle !important;
-}
-
-.btn {
-  min-width: 80px;
-}
-
-@media (max-width: 768px) {
-  .glass-card {
-    border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  
+  /* This is the key to preventing column widths from changing */
+  table-layout: fixed;
+  width: 100%;
+  
+  th, td {
+    vertical-align: middle !important;
+    /* Prevents long text from breaking the layout */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
+  
+  /* Assigning specific widths to prevent resizing */
+  th:nth-child(1), td:nth-child(1) { width: 15%; } /* Bill ID */
+  th:nth-child(2), td:nth-child(2) { width: 20%; } /* Billing Period */
+  th:nth-child(3), td:nth-child(3) { width: 20%; } /* Due Date */
+  th:nth-child(4), td:nth-child(4) { width: 15%; } /* Amount */
+  th:nth-child(5), td:nth-child(5) { width: 15%; } /* Status */
+  th:nth-child(6), td:nth-child(6) { width: 15%; text-align: center; } /* Actions */
+
+  /* CORRECTED: This rule allows the dropdown in the Actions column to be visible */
+  tbody td:last-child {
+    overflow: visible;
+  }
+}
+
+/* --- Dropdown Menu Styling --- */
+.dropdown {
+  position: relative; /* Crucial for positioning the menu */
+}
+
+.dropdown-menu {
+  z-index: 100; /* Ensures menu appears above other table content */
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
   .table {
     font-size: 0.95rem;
   }
   th, td {
     padding: 0.5rem;
+    white-space: nowrap; /* Keep table content on one line for scrolling */
   }
 }
