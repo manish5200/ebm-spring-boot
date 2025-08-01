@@ -240,17 +240,17 @@ export class CustomerBillsComponent implements OnInit {
     this.paymentError = '';
   }
 
-  downloadBill(bill: Bill): void {
-    this.billService.downloadBill(bill.billId).subscribe({
-      next: (response) => {
-        // Handle file download
-        this.toastr.success('Bill downloaded successfully');
-      },
-      error: (error) => {
-        this.toastr.error(error.message || 'Failed to download bill', 'Error');
-      }
-    });
-  }
+  // downloadBill(bill: Bill): void {
+  //   this.billService.downloadBill(bill.billId).subscribe({
+  //     next: (response) => {
+  //       // Handle file download
+  //       this.toastr.success('Bill downloaded successfully');
+  //     },
+  //     error: (error) => {
+  //       this.toastr.error(error.message || 'Failed to download bill', 'Error');
+  //     }
+  //   });
+  // }
 
   payNow(bill: Bill): void {
     this.selectedBill = bill;
